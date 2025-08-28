@@ -1,0 +1,176 @@
+//- homeP.pug
+
+doctype html
+html
+  head
+    title #{title}
+    link(rel="stylesheet", href="/css/homeP.css")
+    script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js")  // Using Google CDN
+    //- BGM Control Styles
+    style.
+            .bgm-controls {
+        display: none;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+        font-family: Arial, sans-serif;
+        min-width: 200px;
+      }
+      .bgm-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        width: 100%;
+        transition: all 0.3s ease;
+      }
+      .bgm-btn:hover {
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        transform: translateY(-1px);
+      }
+      .volume-control {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
+      }
+      .volume-slider {
+        flex: 1;
+        height: 6px;
+        border-radius: 3px;
+        background: #333;
+        outline: none;
+        cursor: pointer;
+      }
+      .volume-slider::-webkit-slider-thumb {
+        appearance: none;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #667eea;
+        cursor: pointer;
+      }
+      .volume-slider::-moz-range-thumb {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #667eea;
+        cursor: pointer;
+        border: none;
+      }
+      .volume-label {
+        font-size: 12px;
+        color: #ccc;
+      }
+      #volume-percent {
+        font-size: 12px;
+        color: white;
+        min-width: 35px;
+      }
+      .auto-click-trigger {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 1px;
+        height: 1px;
+        opacity: 0;
+        pointer-events: auto;
+        z-index: 1;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+      }
+      /* Chest button hover effects */
+      #start-btn {
+        background: url('/pic/chestclose.png') no-repeat center center;
+        background-size: contain;
+        background-color: transparent; /* Remove any background color */
+        border: none;
+        width: 150px;
+        height: 120px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        outline: none;
+        text-indent: -9999px; /* Hide text but keep it for accessibility */
+        overflow: hidden;
+        box-shadow: none; /* Remove any box shadow */
+        padding: 0; /* Remove any padding */
+        margin: 0; /* Remove any margin */
+      }
+      #start-btn:hover {
+        background-image: url('/pic/chestopen.png');
+        background-color: transparent; /* Keep transparent on hover */
+        transform: scale(1.1);
+      }
+      #start-btn:active {
+        transform: scale(0.95);
+        background-color: transparent; /* Keep transparent when clicked */
+      }
+      #start-btn:focus {
+        background-color: transparent; /* Keep transparent when focused */
+        outline: none;
+      }
+      
+    //- JavaScript for chest sound effect
+    script.
+      document.addEventListener('DOMContentLoaded', function() {
+        const startBtn = document.getElementById('start-btn');
+        let chestSound = null;
+        
+        // Preload the sound
+        function preloadSound() {
+          chestSound = new Audio('/music/opchestsound.mp3');
+          chestSound.preload = 'auto';
+          chestSound.volume = 0.5; // Set volume to 50%
+        }
+        
+        // Play sound on hover
+        function playChestSound() {
+          if (chestSound) {
+            chestSound.currentTime = 0; // Reset to beginning
+            chestSound.play().catch(e => console.log('Sound play failed:', e));
+          }
+        }
+        
+        // Initialize sound and add event listeners
+        preloadSound();
+        
+        if (startBtn) {
+          startBtn.addEventListener('mouseenter', playChestSound);
+        }
+      });
+  body
+    .container
+      .header
+        h1 #{title}
+
+      
+
+      .main-content
+        .press-text Press Here !!!
+        button#start-btn(onclick="window.location.href='/loginjoinP';") Start
+
+    //- Hidden clickable element for autoplay trigger
+    button.auto-click-trigger#auto-click-trigger
+
+    //- Music Controls UI
+    .bgm-controls
+      button#toggle-bgm-btn.bgm-btn ▶️ Play
+      .volume-control
+        span.volume-label 🔊
+        input#volume-slider.volume-slider(type="range" min="0" max="100" value="50")
+        span#volume-percent 50%
+
+    script(src="/js/homeP.js")  // Link to the JavaScript file that will handle button click and more
+    script(src="/js/bgm.js")    // Link to the background music control script

@@ -1,0 +1,183 @@
+doctype html
+html
+  head
+    title Waiting Room
+    link(rel="stylesheet", href="/css/waitingroom.css")
+    //- BGM Control Styles
+    style.
+      .bgm-controls {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+        font-family: Arial, sans-serif;
+        min-width: 200px;
+      }
+      .bgm-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        width: 100%;
+        transition: all 0.3s ease;
+      }
+      .bgm-btn:hover {
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        transform: translateY(-1px);
+      }
+      .volume-control {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
+      }
+      .volume-slider {
+        flex: 1;
+        height: 6px;
+        border-radius: 3px;
+        background: #333;
+        outline: none;
+        cursor: pointer;
+      }
+      .volume-slider::-webkit-slider-thumb {
+        appearance: none;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #667eea;
+        cursor: pointer;
+      }
+      .volume-slider::-moz-range-thumb {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #667eea;
+        cursor: pointer;
+        border: none;
+      }
+      .volume-label {
+        font-size: 12px;
+        color: #ccc;
+      }
+      #volume-percent {
+        font-size: 12px;
+        color: white;
+        min-width: 35px;
+      }
+  body
+    .container
+      .header
+        h1 Waiting Room
+        p Welcome #{user_name}, you are waiting for the session creator to start the game.
+
+      .content
+        p
+          | Session ID: 
+          span#sessionId #{session_id}
+
+        .waiting-participants
+          h3 Waiting Participants to Join:
+          ul#playersList
+            each player in players
+              li= player.user_name
+
+        // If the user is the session creator, show the "Start Game" button
+        if isSessionCreator
+          .start-game-container
+            a.btn#start-game-btn(href="/start-game?session_id=#{session_id}") Start Game
+        else
+          p Wait for the host to start the game.
+
+      .footer
+        a(href="/mainpage") Back to Main Page
+
+    //- Music Controls UI
+    .bgm-controls
+      button#toggle-bgm-btn.bgm-btn ▶️ Play
+      .volume-control
+        span.volume-label 🔊
+        input#volume-slider.volume-slider(type="range" min="0" max="100" value="50")
+        span#volume-percent 50%
+
+    script(src="/socket.io/socket.io.js")  // Add the Socket.IO client-side script
+    script(src="/js/bgm.js")    // Link to the background music control script
+    script.
+      // Connect to the server via Socket.IO
+      const socket = io.connect();
+
+      // Join the session by emitting the session_id
+      const sessionId = "#{session_id}";
+      socket.emit('joinSession', sessionId);
+
+      // Listen for the 'gameStarted' event from the server
+      socket.on('gameStarted', (data) => {
+          if (data.sessionId === sessionId) {
+              // Redirect the user to the game page when the game starts
+              window.location.href = `/game?session_id=${sessionId}`;
+          }
+      });
+
+      // Listen for changes in the players list and update the UI in real-time
+      socket.on('updatePlayers', (players) => {
+          const playersList = document.querySelector('#playersList');
+          playersList.innerHTML = ''; // Clear the current list
+          players.forEach(player => {
+              const li = document.createElement('li');
+              li.textContent = player.user_name;
+              playersList.appendChild(li);
+          });
+      });
+
+      // JavaScript to copy session_id to clipboard
+      document.getElementById('copySessionIdBtn').addEventListener('click', function() {
+          const sessionId = document.getElementById('sessionId').textContent;
+          navigator.clipboard.writeText(sessionId).then(function() {
+              alert('Session ID copied to clipboard!');
+          }).catch(function(err) {
+              console.error('Error copying session ID:', err);
+          });
+      });
+
+    // Auto-refresh every 5 seconds to check if the game has started and update the participants list
+    script.
+      setInterval(function() {
+        const sessionId = "#{session_id}";  // The session_id passed from the server
+
+        // Check if the game has started and get the updated players list
+        fetch(`/check-game-status?session_id=${sessionId}`)
+          .then(response => response.json())
+          .then(data => {
+            if (data.game_started) {
+              console.log('Game has started, redirecting to game page...');  // Debugging log
+              window.location.href = `/game?session_id=${sessionId}`;  // Redirect to the game page
+            } else {
+              // Fetch the updated players list
+              fetch(`/get-players?session_id=${sessionId}`)
+                .then(response => response.json())
+                .then(playersData => {
+                  // Update the participants list dynamically
+                  const playersList = document.querySelector('.waiting-participants ul');
+                  playersList.innerHTML = '';  // Clear the current list
+
+                  // Add updated players to the list
+                  playersData.players.forEach(player => {
+                    const li = document.createElement('li');
+                    li.textContent = player.user_name;
+                    playersList.appendChild(li);
+                  });
+                })
+                .catch(error => console.error('Error fetching players:', error));
+            }
+          })
+          .catch(error => console.error('Error checking game status:', error));
+      }, 5000);  // 5000 milliseconds = 5 seconds

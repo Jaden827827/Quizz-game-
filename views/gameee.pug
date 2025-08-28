@@ -1,0 +1,2202 @@
+doctype html
+html
+  head
+    title Game
+    link(rel="stylesheet", href="/css/gameee.css")
+    script(src="https://unpkg.com/jsqr@1.4.0/dist/jsQR.js")
+    style.
+      /* BGM Controls for Game */
+      .bgm-controls-game {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+        font-family: Arial, sans-serif;
+        min-width: 200px;
+        display: none; /* Hide BGM controls */
+      }
+      .bgm-btn-game {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        width: 100%;
+        transition: all 0.3s ease;
+      }
+      .bgm-btn-game:hover {
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        transform: translateY(-1px);
+      }
+      .volume-control-game {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
+      }
+      .volume-slider-game {
+        flex: 1;
+        height: 6px;
+        border-radius: 3px;
+        background: #333;
+        outline: none;
+        cursor: pointer;
+      }
+      .volume-slider-game::-webkit-slider-thumb {
+        appearance: none;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #667eea;
+        cursor: pointer;
+      }
+      .volume-slider-game::-moz-range-thumb {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #667eea;
+        cursor: pointer;
+        border: none;
+      }
+      .volume-label-game {
+        font-size: 12px;
+        color: #ccc;
+      }
+      #volume-percent-game {
+        font-size: 12px;
+        color: white;
+        min-width: 35px;
+      }
+      .auto-click-trigger-game {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 1px;
+        height: 1px;
+        opacity: 0;
+        pointer-events: auto;
+        z-index: 1;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+      }
+  body
+    //- Auto-click trigger for music autoplay bypass
+    button#auto-click-trigger-game.auto-click-trigger-game
+    // Rules Modal
+    #rulesModal.modal
+      .modal-content
+        .modal-header Game Rules
+        .modal-body
+          h3 Welcome to Python Pop-Out Challenge!
+          ul
+            li Answer Python programming questions as quickly as possible
+            
+
+
+            li Buzz to Answer:
+            li The first player to press the buzzer gets the chance to answer the question.
+            li Player 1 press the button "W" 
+            li Player 2 press the button "P"
+            li Player 3 press the button "Z"
+            li Player 4 press the button "M"
+
+            li Answer the Question:
+            li Once you buzz in, choose the correct answer from the options A, B, C, or D.
+
+            li Get Instant Feedback:
+            li After answering, you’ll see if your answer was correct or incorrect.
+
+            li If correct: 
+            li You earn points and penalize your opponent by allowing you to stab a sword into their pirate barrel.
+            li If incorrect: 
+            li You lose the chance to earn points, and your opponent will get to penalize you by stabbing a sword into your pirate barrel.
+
+            li Bonus Ability:
+            li Every 3 questions answered, you can buzz in for a special ability.
+            li This ability allows you to skip the current question or force an opponent to answer it.
+            li Press your key to buzz for the ability: W, P, Z, M 
+            li The first player to buzz in gets the ability.
+
+            li Game End Options:
+            li The game ends when someone pirate barrel pops out, press "STOP" button and your total score will be displayed.
+            li Alternatively, the game can end early if any player's pirate barrel pops. This means that player loses the game, and the game ends before all questions have been answered.
+
+
+        button.modal-button(onclick="closeModal()") OK, Let's Start!
+
+    // Main Game Content (hidden initially)
+    .game-content#gameContent
+      // Countdown timer at the top
+      .countdown-timer#countdownTimer
+        .countdown-text Reading Time
+        .countdown-number#countdownNumber 10
+        .countdown-status#countdownStatus Players can only read the question. Buzzing disabled.
+      
+      // Top notification area
+      .top-notification#topNotification
+      
+      // Display players at 4 corners
+      if players && players.length > 0
+        // Player 1 - Top Left
+        if players[0]
+          .player-corner.player1
+            .player-number Player 1 (Press W)
+            .player-name= players[0].user_name
+        
+        // Player 2 - Top Right  
+        if players[1]
+          .player-corner.player2
+            .player-number Player 2 (Press P)
+            .player-name= players[1].user_name
+        
+        // Player 3 - Bottom Left
+        if players[2]
+          .player-corner.player3
+            .player-number Player 3 (Press Z)
+            .player-name= players[2].user_name
+        
+        // Player 4 - Bottom Right
+        if players[3]
+          .player-corner.player4
+            .player-number Player 4 (Press M)
+            .player-name= players[3].user_name
+      
+      // Center content area
+      .center-content
+        .session-info
+          p Session ID: 
+            strong #{session_id}
+        
+        // Display current question
+        .question-display#questionDisplay
+          .question-title#currentQuestionText Question will appear here
+          .options-list#currentOptions
+            p A) Option A
+            p B) Option B
+            p C) Option C
+            p D) Option D
+        
+        .footer
+          button.end-game-btn(onclick="endGame()") End Game
+          button.leave-game-btn(onclick="document.getElementById('leavePageConfirmModal').style.display = 'block'; pauseAllTimers();") Leave Game
+
+    // Question Modal
+    .question-modal#questionModal
+      .question-content
+        .answer-timer#answerTimer
+          .timer-text Answer Time Remaining
+          .timer-countdown#answerCountdown 2:00
+        .question-text#questionText Question will appear here
+        .answer-options
+          button.answer-btn(onclick="selectAnswer('A')") A) Option A
+          button.answer-btn(onclick="selectAnswer('B')") B) Option B  
+          button.answer-btn(onclick="selectAnswer('C')") C) Option C
+          button.answer-btn(onclick="selectAnswer('D')") D) Option D
+        button.pass-btn(onclick="passQuestion()") Pass
+
+    // Result Modal
+    .result-modal#resultModal
+      .result-content
+        .result-text#resultText Result will appear here
+        button.result-btn(onclick="closeResult()") OK
+
+    // Pause Modal
+    .pause-modal#pauseModal
+      .pause-content
+        .pause-header Game Paused
+        .pause-body
+          p The game has been paused. All timers are stopped.
+          p Press Continue to resume the game.
+        .pause-buttons
+          button.pause-btn.continue-btn(onclick="resumeGame()") Continue
+          button.pause-btn.end-btn(onclick="endGame()") End Game
+
+    // Pass Confirmation Modal
+    .pass-confirmation-modal#passConfirmModal
+      .pass-confirmation-content
+        .pass-confirmation-header Confirm Pass
+        .pass-confirmation-body
+          p#passConfirmMessage Are you sure you want to pass this question?
+        .pass-confirmation-buttons
+          button.pass-confirm-btn.yes-btn(onclick="confirmPass()") Yes, Pass
+          button.pass-confirm-btn.no-btn(onclick="cancelPass()") No, Continue
+
+    // End Game Confirmation Modal
+    .end-game-confirmation-modal#endGameConfirmModal
+      .end-game-confirmation-content
+        .end-game-confirmation-header End Game
+        .end-game-confirmation-body
+          p Are you sure you want to end the entire game?
+          p This will take you to the final results page.
+        .end-game-confirmation-buttons
+          button.end-game-confirm-btn.yes-end-btn(onclick="confirmEndGame()") Yes, End Game
+          button.end-game-confirm-btn.no-end-btn(onclick="cancelEndGame()") No, Continue Playing
+
+    // Leave Page Confirmation Modal
+    .leave-page-confirmation-modal#leavePageConfirmModal
+      .leave-page-confirmation-content
+        .leave-page-confirmation-header Leave Game
+        .leave-page-confirmation-body
+          p Are you sure you want to leave the game?
+          p The current game session will be ended and you'll be taken to the results page.
+        .leave-page-confirmation-buttons
+          button.leave-page-confirm-btn.yes-leave-btn(onclick="confirmLeavePage()") Yes, Leave Game
+          button.leave-page-confirm-btn.no-leave-btn(onclick="cancelLeavePage()") No, Stay in Game
+
+    // Ability Modal
+    .ability-modal#abilityModal
+      .ability-modal-content
+        h2 Ability Available!
+        
+        .ability-message#abilityMessage Ready to buzz for ability!
+        
+        .ability-countdown#abilityCountdownDisplay 5
+        
+        .ability-buzz-keys
+          .ability-key
+            .ability-key-letter W
+            .ability-key-player Player 1
+          .ability-key
+            .ability-key-letter P
+            .ability-key-player Player 2
+          .ability-key
+            .ability-key-letter Z
+            .ability-key-player Player 3
+          .ability-key
+            .ability-key-letter M
+            .ability-key-player Player 4
+        
+        .ability-buzz-info Press your key to buzz for the ability!
+        
+        .ability-winner#abilityWinnerDisplay
+        
+        .ability-qr-section#abilityQRCode(style="display: none;")
+          | QR Scanner will appear here
+        
+        button.ability-continue-btn#abilityContinueBtn(onclick="closeAbilityModal()" style="display: none;") Continue Game
+
+    //- Music Controls UI for Game
+    .bgm-controls-game
+      button#toggle-bgm-btn-game.bgm-btn-game ▶️ Play Music
+      .volume-control-game
+        span.volume-label-game 🔊
+        input#volume-slider-game.volume-slider-game(type="range" min="0" max="100" value="50")
+        span#volume-percent-game 50%
+
+    script.
+      let gameState = {
+        buzzedIn: false,
+        currentPlayer: null,
+        questionStartTime: null,
+        buzzTime: null,
+        sessionId: "#{session_id}",
+        playerNames: [
+          "#{players[0] ? players[0].user_name : ''}",
+          "#{players[1] ? players[1].user_name : ''}",
+          "#{players[2] ? players[2].user_name : ''}",
+          "#{players[3] ? players[3].user_name : ''}"
+        ],
+        readingPeriod: false, // New state to track if in reading period
+        countdownTimer: null,  // Timer reference
+        buzzTimer: null,      // Timer for buzz period
+        buzzTimeLimit: 60000, // 1 minute in milliseconds
+        isPaused: false,      // Pause state
+        pausedTimeLeft: 0,    // Store remaining time when paused
+        pausedTimerType: null, // Store which timer was running ('reading' or 'buzz')
+        answerTimer: null,    // Timer for answering question
+        answerTimeLimit: 120000, // 2 minutes in milliseconds
+        // Ability system variables
+        abilityCountdown: null,
+        abilityBuzzPeriod: false,
+        abilityWinner: null,
+        questionAttemptCount: 0,
+        abilityActive: false
+      };
+      
+      // Questions from database (randomly ordered)
+      const questions = !{JSON.stringify(questions || [])};
+      
+      let currentQuestion = 0;
+      let usedQuestions = []; // Track used questions to avoid repeats
+      
+      function closeModal() {
+        document.getElementById('rulesModal').style.display = 'none';
+        document.getElementById('gameContent').style.display = 'block';
+        
+        // Display the first question immediately
+        displayCurrentQuestion();
+        
+        // Start listening for keyboard events
+        document.addEventListener('keydown', handleKeyPress);
+      }
+      
+      function displayCurrentQuestion() {
+        // Check if we have any questions available
+        if (!questions || questions.length === 0) {
+          document.getElementById('currentQuestionText').textContent = 'No questions available';
+          return;
+        }
+        
+        console.log('Available questions:', questions); // Debug log
+        
+        // If all questions have been used, reset the used questions list
+        if (usedQuestions.length >= questions.length) {
+          usedQuestions = [];
+          console.log('All questions used, resetting...');
+        }
+        
+        // Find an unused question
+        let questionIndex;
+        do {
+          questionIndex = Math.floor(Math.random() * questions.length);
+        } while (usedQuestions.includes(questionIndex));
+        
+        // Mark this question as used
+        usedQuestions.push(questionIndex);
+        
+        const question = questions[questionIndex];
+        console.log('Selected question:', question); // Debug log
+        
+        // Display question with question_id and question_text
+        document.getElementById('currentQuestionText').textContent = `${question.question_id}: ${question.question_text}`;
+        
+        const optionsContainer = document.getElementById('currentOptions');
+        optionsContainer.innerHTML = '';
+        
+        // Display all options A, B, C, D
+        const optionsArray = [
+          `A) ${question.option_a}`,
+          `B) ${question.option_b}`,
+          `C) ${question.option_c}`,
+          `D) ${question.option_d}`
+        ];
+        
+        optionsArray.forEach(option => {
+          const p = document.createElement('p');
+          p.textContent = option;
+          optionsContainer.appendChild(p);
+        });
+        
+        // Store current question index for answer checking
+        gameState.currentQuestionIndex = questionIndex;
+        
+        // Start 10-second reading period
+        startReadingPeriod();
+      }
+      
+      function handleKeyPress(event) {
+        // Check for space bar to pause/resume game
+        if (event.code === 'Space') {
+          event.preventDefault(); // Prevent page scroll
+          if (gameState.isPaused) {
+            resumeGame();
+          } else {
+            pauseGame();
+          }
+          return;
+        }
+        
+        // Don't handle game keys if paused
+        if (gameState.isPaused) return;
+        
+        // Check for ability buzzing (when buzz period is active)
+        if (gameState.abilityBuzzPeriod && !gameState.abilityWinner) {
+          const key = event.key.toLowerCase();
+          let player = null;
+          
+          switch(key) {
+            case 'w':
+              player = 1;
+              break;
+            case 'p':
+              player = 2;
+              break;
+            case 'z':
+              player = 3;
+              break;
+            case 'm':
+              player = 4;
+              break;
+          }
+          
+          if (player && gameState.playerNames[player - 1]) {
+            event.preventDefault();
+            buzzerPressed(player);
+            return;
+          }
+        }
+        
+        // Check if we're in reading period - prevent buzzing
+        if (gameState.readingPeriod) {
+          console.log('Reading period active - buzzing disabled');
+          return;
+        }
+        
+        if (gameState.buzzedIn) return; // Someone already buzzed in
+        
+        const key = event.key.toLowerCase();
+        let player = null;
+        let playerName = '';
+        let bgClass = '';
+        
+        switch(key) {
+          case 'w':
+            player = 1;
+            playerName = gameState.playerNames[0];
+            bgClass = 'bg-red';
+            break;
+          case 'p':
+            player = 2;
+            playerName = gameState.playerNames[1];
+            bgClass = 'bg-green';
+            break;
+          case 'z':
+            player = 3;
+            playerName = gameState.playerNames[2];
+            bgClass = 'bg-blue';
+            break;
+          case 'm':
+            player = 4;
+            playerName = gameState.playerNames[3];
+            bgClass = 'bg-yellow';
+            break;
+          default:
+            return;
+        }
+        
+        if (!playerName) return; // Player doesn't exist
+        
+        // Clear the buzz timer since someone buzzed
+        if (gameState.buzzTimer) {
+          clearTimeout(gameState.buzzTimer);
+          gameState.buzzTimer = null;
+          console.log('Buzz timer cleared - player buzzed in time!');
+        }
+        
+        // Clear countdown timer and hide it immediately when someone buzzes
+        if (gameState.countdownTimer) {
+          clearInterval(gameState.countdownTimer);
+          gameState.countdownTimer = null;
+          document.getElementById('countdownTimer').style.display = 'none';
+          console.log('Countdown timer hidden - player buzzed!');
+        }
+        
+        // Record buzz time
+        gameState.buzzTime = Date.now();
+        
+        // Player buzzed in first
+        gameState.buzzedIn = true;
+        gameState.currentPlayer = player;
+        
+        // Change background color
+        document.body.className = bgClass;
+        
+        // Show notification
+        const notification = document.getElementById('topNotification');
+        notification.textContent = `${playerName} (Player ${player}) buzzed in first!`;
+        notification.style.display = 'block';
+        
+        // Show question after 2 seconds
+        setTimeout(() => {
+          notification.style.display = 'none';
+          showQuestion();
+        }, 2000);
+      }
+      
+      function showQuestion() {
+        const question = questions[gameState.currentQuestionIndex];
+        
+        // Display question with question_id and question_text
+        document.getElementById('questionText').textContent = `${question.question_id}: ${question.question_text}`;
+        
+        // Update answer buttons with options from database
+        const buttons = document.querySelectorAll('.answer-btn');
+        buttons[0].textContent = `A) ${question.option_a}`;
+        buttons[1].textContent = `B) ${question.option_b}`;
+        buttons[2].textContent = `C) ${question.option_c}`;
+        buttons[3].textContent = `D) ${question.option_d}`;
+        
+        document.getElementById('questionModal').style.display = 'block';
+        
+        // Start 2-minute answer timer
+        startAnswerTimer();
+      }
+      
+      function selectAnswer(answer) {
+        // Clear the answer timer since player answered
+        if (gameState.answerTimer) {
+          clearInterval(gameState.answerTimer);
+          gameState.answerTimer = null;
+          console.log('Answer timer cleared - player answered in time!');
+        }
+        
+        const question = questions[gameState.currentQuestionIndex];
+        const isCorrect = answer === question.correct_option;
+        
+        console.log('Question object:', question); // Debug log
+        console.log('Explanation field:', question.explaination); // Debug log
+        
+        // Calculate response time in seconds with millisecond precision
+        const responseTimeMs = gameState.buzzTime - gameState.questionStartTime;
+        const responseTimeSeconds = Math.round(responseTimeMs) / 1000; // Convert to seconds with 3 decimal places
+        
+        console.log('Response time calculation:', {
+          questionStartTime: gameState.questionStartTime,
+          buzzTime: gameState.buzzTime,
+          responseTimeMs: responseTimeMs,
+          responseTimeSeconds: responseTimeSeconds
+        });
+        
+        // Save attempt to database
+        const attemptData = {
+          username: gameState.playerNames[gameState.currentPlayer - 1], // Send username instead of user_id
+          question_id: question.question_id,
+          session_id: gameState.sessionId,
+          answer_chosen: answer,
+          is_correct: isCorrect ? 1 : 0,
+          response_time_seconds: responseTimeSeconds
+        };
+        
+        console.log('Saving attempt data:', attemptData);
+        
+        // Send to server
+        fetch('/gameee/save-attempt', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(attemptData)
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Attempt saved successfully:', data);
+          
+          // Increment question attempt count for ability system
+          gameState.questionAttemptCount++;
+          console.log('Question attempt count:', gameState.questionAttemptCount);
+          
+          // Check if we should trigger ability modal (every 3 attempts)
+          if (gameState.questionAttemptCount % 3 === 0) {
+            console.log('Triggering ability modal after 3 attempts');
+            // Show result first, then ability modal after user clicks OK
+            gameState.showAbilityAfterResult = true;
+          }
+        })
+        .catch(error => {
+          console.error('Error saving attempt:', error);
+        });
+        
+        document.getElementById('questionModal').style.display = 'none';
+        
+        const resultText = document.getElementById('resultText');
+        
+        // Handle different possible explanation field names
+        const explanation = question.explaination || question.explanation || 'No explanation available';
+        
+        // Get random opponent (exclude current player)
+        const availableOpponents = [];
+        gameState.playerNames.forEach((name, index) => {
+          if (name && name.trim() !== '' && (index + 1) !== gameState.currentPlayer) {
+            availableOpponents.push(name);
+          }
+        });
+        
+        const randomOpponent = availableOpponents.length > 0 ? 
+          availableOpponents[Math.floor(Math.random() * availableOpponents.length)] : 
+          'No opponent available';
+        
+        if (isCorrect) {
+          resultText.innerHTML = `
+            <strong>Correct Answer!</strong><br>
+            Well done ${gameState.playerNames[gameState.currentPlayer - 1]}!<br><br>
+            <strong>Session ID:</strong> ${gameState.sessionId}<br>
+            <strong>Question ID:</strong> ${question.question_id}<br>
+            <strong>Explanation:</strong> ${explanation}<br><br>
+            <strong style="color: #4CAF50;">🎯 You can do punishment to your opponent!</strong><br>
+            <strong>Random Opponent Selected:</strong> ${randomOpponent}<br>
+            <em>You get to stab a sword into ${randomOpponent}'s pirate barrel!</em>
+          `;
+        } else {
+          resultText.innerHTML = `
+            <strong>Wrong Answer!</strong><br>
+            Sorry ${gameState.playerNames[gameState.currentPlayer - 1]}, that's incorrect!<br><br>
+            <strong>Session ID:</strong> ${gameState.sessionId}<br>
+            <strong>Question ID:</strong> ${question.question_id}<br>
+            <strong>Correct Answer:</strong> ${question.correct_option}<br>
+            <strong>Explanation:</strong> ${explanation}<br><br>
+            <strong style="color: #f44336;">⚔️ Penalty Time!</strong><br>
+            <strong>Penalty Executor:</strong> ${randomOpponent}<br>
+            <em>${randomOpponent} will stab a sword into your pirate barrel!</em>
+          `;
+        }
+        
+        // Show result modal
+        document.getElementById('resultModal').style.display = 'block';
+      }
+      
+      function closeResult() {
+        document.getElementById('resultModal').style.display = 'none';
+        
+        // Check if we need to trigger ability modal
+        if (gameState.showAbilityAfterResult) {
+          gameState.showAbilityAfterResult = false;
+          showAbilityModal();
+          return; // Don't reset game yet, wait for ability modal to close
+        }
+        
+        // Reset game state and show next random question
+        resetGame();
+        displayCurrentQuestion();
+      }
+      
+      function resetGame() {
+        gameState.buzzedIn = false;
+        gameState.currentPlayer = null;
+        gameState.questionStartTime = null;
+        gameState.buzzTime = null;
+        gameState.readingPeriod = false;
+        gameState.isPaused = false;
+        gameState.pausedTimeLeft = 0;
+        gameState.pausedTimerType = null;
+        document.body.className = '';
+        document.getElementById('topNotification').style.display = 'none';
+        document.getElementById('countdownTimer').style.display = 'none';
+        
+        // Clear countdown timer if it exists
+        if (gameState.countdownTimer) {
+          clearInterval(gameState.countdownTimer);
+          gameState.countdownTimer = null;
+        }
+        
+        // Clear buzz timer if it exists
+        if (gameState.buzzTimer) {
+          clearTimeout(gameState.buzzTimer);
+          gameState.buzzTimer = null;
+        }
+        
+        // Clear answer timer if it exists
+        if (gameState.answerTimer) {
+          clearInterval(gameState.answerTimer);
+          gameState.answerTimer = null;
+        }
+      }
+      
+      function pauseGame() {
+        if (gameState.isPaused) return; // Already paused
+        
+        console.log('Pausing game...');
+        gameState.isPaused = true;
+        
+        // Stop and store current timer state
+        if (gameState.countdownTimer) {
+          // Get current timer display to extract time left
+          const numberElement = document.getElementById('countdownNumber');
+          const currentText = numberElement.textContent;
+          
+          // Parse remaining time from display
+          if (currentText.includes('seconds')) {
+            const match = currentText.match(/(\d+)\s+seconds/);
+            if (match) {
+              gameState.pausedTimeLeft = parseInt(match[1]);
+            }
+          } else if (currentText.includes('minute')) {
+            const minuteMatch = currentText.match(/(\d+)\s+minute/);
+            const secondMatch = currentText.match(/and\s+(\d+)\s+seconds/);
+            const minutes = minuteMatch ? parseInt(minuteMatch[1]) : 0;
+            const seconds = secondMatch ? parseInt(secondMatch[1]) : 0;
+            gameState.pausedTimeLeft = minutes * 60 + seconds;
+          }
+          
+          // Determine timer type
+          const textElement = document.querySelector('.countdown-text');
+          gameState.pausedTimerType = textElement.textContent === 'Reading Time' ? 'reading' : 'buzz';
+          
+          clearInterval(gameState.countdownTimer);
+          gameState.countdownTimer = null;
+        }
+        
+        // Stop buzz timer
+        if (gameState.buzzTimer) {
+          clearTimeout(gameState.buzzTimer);
+          gameState.buzzTimer = null;
+        }
+        
+        // Show pause modal
+        document.getElementById('pauseModal').style.display = 'block';
+      }
+      
+      function resumeGame() {
+        if (!gameState.isPaused) return; // Not paused
+        
+        console.log('Resuming game...');
+        gameState.isPaused = false;
+        
+        // Hide pause modal
+        document.getElementById('pauseModal').style.display = 'none';
+        
+        // Resume timer based on stored state
+        if (gameState.pausedTimeLeft > 0 && gameState.pausedTimerType) {
+          if (gameState.pausedTimerType === 'reading') {
+            resumeReadingTimer(gameState.pausedTimeLeft);
+          } else if (gameState.pausedTimerType === 'buzz') {
+            resumeBuzzTimer(gameState.pausedTimeLeft);
+          }
+        }
+        
+        // Clear pause state
+        gameState.pausedTimeLeft = 0;
+        gameState.pausedTimerType = null;
+      }
+      
+      function resumeReadingTimer(timeLeft) {
+        const timerElement = document.getElementById('countdownTimer');
+        const numberElement = document.getElementById('countdownNumber');
+        const statusElement = document.getElementById('countdownStatus');
+        
+        timerElement.style.display = 'block';
+        statusElement.textContent = 'Players can only read the question. Buzzing disabled.';
+        
+        numberElement.textContent = timeLeft + ' seconds';
+        
+        gameState.countdownTimer = setInterval(() => {
+          timeLeft--;
+          if (timeLeft > 0) {
+            numberElement.textContent = timeLeft + ' seconds';
+          } else {
+            numberElement.textContent = '0 seconds';
+          }
+          
+          if (timeLeft <= 0) {
+            clearInterval(gameState.countdownTimer);
+            gameState.countdownTimer = null;
+            gameState.readingPeriod = false;
+            
+            statusElement.textContent = 'Buzzing now enabled! Press your key to buzz in!';
+            numberElement.textContent = 'BUZZ!';
+            
+            gameState.questionStartTime = Date.now();
+            console.log('Reading period ended - buzzing now enabled!');
+            
+            startBuzzTimer();
+          }
+        }, 1000);
+      }
+      
+      function resumeBuzzTimer(timeLeft) {
+        const timerElement = document.getElementById('countdownTimer');
+        const textElement = document.querySelector('.countdown-text');
+        const numberElement = document.getElementById('countdownNumber');
+        const statusElement = document.getElementById('countdownStatus');
+        
+        textElement.textContent = 'Buzz Time';
+        statusElement.textContent = 'Press your key to buzz in! Auto-select if no one buzzes.';
+        
+        function formatTime(seconds) {
+          if (seconds >= 60) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            if (remainingSeconds === 0) {
+              return minutes + ' minute' + (minutes > 1 ? 's' : '');
+            } else {
+              return minutes + ' minute' + (minutes > 1 ? 's' : '') + ' and ' + remainingSeconds + ' seconds';
+            }
+          } else {
+            return seconds + ' seconds';
+          }
+        }
+        
+        numberElement.textContent = formatTime(timeLeft);
+        
+        gameState.countdownTimer = setInterval(() => {
+          timeLeft--;
+          if (timeLeft > 0) {
+            numberElement.textContent = formatTime(timeLeft);
+          } else {
+            numberElement.textContent = '0 seconds';
+          }
+          
+          if (timeLeft <= 0) {
+            clearInterval(gameState.countdownTimer);
+            gameState.countdownTimer = null;
+            timerElement.style.display = 'none';
+          }
+        }, 1000);
+        
+        gameState.buzzTimer = setTimeout(() => {
+          if (!gameState.buzzedIn) {
+            console.log('No player buzzed within remaining time - selecting random player...');
+            selectRandomPlayer();
+          }
+        }, timeLeft * 1000);
+      }
+      
+      function startAnswerTimer() {
+        console.log('Starting 2-minute answer timer...');
+        
+        let timeLeft = 120; // 120 seconds = 2 minutes
+        const countdownElement = document.getElementById('answerCountdown');
+        
+        // Function to format time as MM:SS
+        function formatAnswerTime(seconds) {
+          const minutes = Math.floor(seconds / 60);
+          const remainingSeconds = seconds % 60;
+          return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+        }
+        
+        countdownElement.textContent = formatAnswerTime(timeLeft);
+        
+        // Start countdown
+        gameState.answerTimer = setInterval(() => {
+          timeLeft--;
+          countdownElement.textContent = formatAnswerTime(timeLeft);
+          
+          // Change color when time is running out
+          if (timeLeft <= 30) {
+            countdownElement.style.color = '#ff4444';
+            countdownElement.style.fontWeight = 'bold';
+          } else if (timeLeft <= 60) {
+            countdownElement.style.color = '#ff8800';
+          }
+          
+          if (timeLeft <= 0) {
+            // Time's up - consider as wrong answer
+            clearInterval(gameState.answerTimer);
+            gameState.answerTimer = null;
+            handleAnswerTimeout();
+          }
+        }, 1000);
+      }
+      
+      function handleAnswerTimeout() {
+        console.log('Answer time expired - marking as incorrect');
+        
+        const question = questions[gameState.currentQuestionIndex];
+        
+        // Save attempt to database as incorrect with max response time
+        const attemptData = {
+          username: gameState.playerNames[gameState.currentPlayer - 1],
+          question_id: question.question_id,
+          session_id: gameState.sessionId,
+          answer_chosen: 'X', // Special indicator for timeout
+          is_correct: 0, // Always wrong for timeout (0 represents incorrect)
+          response_time_seconds: 120.000 // Maximum time (2 minutes)
+        };
+        
+        console.log('Saving timeout attempt data:', attemptData);
+        
+        // Send to server
+        fetch('/gameee/save-attempt', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(attemptData)
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Timeout attempt saved successfully:', data);
+        })
+        .catch(error => {
+          console.error('Error saving timeout attempt:', error);
+        });
+        
+        // Hide question modal
+        document.getElementById('questionModal').style.display = 'none';
+        
+        // Show timeout result
+        const resultText = document.getElementById('resultText');
+        const explanation = question.explaination || question.explanation || 'No explanation available';
+        
+        // Get random opponent (exclude current player)
+        const availableOpponents = [];
+        gameState.playerNames.forEach((name, index) => {
+          if (name && name.trim() !== '' && (index + 1) !== gameState.currentPlayer) {
+            availableOpponents.push(name);
+          }
+        });
+        
+        const randomOpponent = availableOpponents.length > 0 ? 
+          availableOpponents[Math.floor(Math.random() * availableOpponents.length)] : 
+          'No opponent available';
+        
+        resultText.innerHTML = `
+          <strong>Time's Up!</strong><br>
+          Sorry ${gameState.playerNames[gameState.currentPlayer - 1]}, you didn't answer in time!<br><br>
+          <strong>Session ID:</strong> ${gameState.sessionId}<br>
+          <strong>Question ID:</strong> ${question.question_id}<br>
+          <strong>Correct Answer:</strong> ${question.correct_option}<br>
+          <strong>Explanation:</strong> ${explanation}<br><br>
+          <strong style="color: #f44336;">⚔️ Penalty Time!</strong><br>
+          <strong>Penalty Executor:</strong> ${randomOpponent}<br>
+          <em>${randomOpponent} will stab a sword into your pirate barrel!</em>
+        `;
+        
+        // Show result modal
+        document.getElementById('resultModal').style.display = 'block';
+      }
+      
+      function passQuestion() {
+        // Show custom confirmation modal
+        const playerName = gameState.playerNames[gameState.currentPlayer - 1];
+        document.getElementById('passConfirmMessage').textContent = `Are you sure you want to pass this question, ${playerName}?`;
+        document.getElementById('passConfirmModal').style.display = 'block';
+      }
+      
+      function confirmPass() {
+        // Hide confirmation modal
+        document.getElementById('passConfirmModal').style.display = 'none';
+        
+        console.log('Player confirmed pass - marking as incorrect');
+        
+        // Clear the answer timer since player passed
+        if (gameState.answerTimer) {
+          clearInterval(gameState.answerTimer);
+          gameState.answerTimer = null;
+          console.log('Answer timer cleared - player passed!');
+        }
+        
+        const question = questions[gameState.currentQuestionIndex];
+        
+        // Save attempt to database as incorrect (pass) with 120 seconds response time
+        const attemptData = {
+          username: gameState.playerNames[gameState.currentPlayer - 1],
+          question_id: question.question_id,
+          session_id: gameState.sessionId,
+          answer_chosen: 'P', // Special indicator for passed question
+          is_correct: 0, // Always wrong for pass (0 represents incorrect)
+          response_time_seconds: 120.000 // Set to 120 seconds for pass
+        };
+        
+        console.log('Saving pass attempt data:', attemptData);
+        
+        // Send to server
+        fetch('/gameee/save-attempt', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(attemptData)
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Pass attempt saved successfully:', data);
+        })
+        .catch(error => {
+          console.error('Error saving pass attempt:', error);
+        });
+        
+        // Hide question modal
+        document.getElementById('questionModal').style.display = 'none';
+        
+        // Show pass result
+        const resultText = document.getElementById('resultText');
+        const explanation = question.explaination || question.explanation || 'No explanation available';
+        
+        // Get random opponent (exclude current player)
+        const availableOpponents = [];
+        gameState.playerNames.forEach((name, index) => {
+          if (name && name.trim() !== '' && (index + 1) !== gameState.currentPlayer) {
+            availableOpponents.push(name);
+          }
+        });
+        
+        const randomOpponent = availableOpponents.length > 0 ? 
+          availableOpponents[Math.floor(Math.random() * availableOpponents.length)] : 
+          'No opponent available';
+        
+        resultText.innerHTML = `
+          <strong>Question Passed!</strong><br>
+          ${gameState.playerNames[gameState.currentPlayer - 1]} chose to pass this question.<br><br>
+          <strong>Session ID:</strong> ${gameState.sessionId}<br>
+          <strong>Question ID:</strong> ${question.question_id}<br>
+          <strong>Correct Answer:</strong> ${question.correct_option}<br>
+          <strong>Explanation:</strong> ${explanation}<br><br>
+          <strong style="color: #ff9800;">⚔️ Penalty Time!</strong><br>
+          <strong>Penalty Executor:</strong> ${randomOpponent}<br>
+          <em>${randomOpponent} will stab a sword into your pirate barrel!</em>
+        `;
+        
+        // Show result modal
+        document.getElementById('resultModal').style.display = 'block';
+      }
+      
+      function cancelPass() {
+        // Hide confirmation modal and continue with question
+        document.getElementById('passConfirmModal').style.display = 'none';
+        console.log('Player canceled pass - continuing with question');
+      }
+      
+      function endGame() {
+        // Pause all game timers when showing end game confirmation
+        pauseAllTimers();
+        
+        // Show custom end game confirmation modal
+        document.getElementById('endGameConfirmModal').style.display = 'block';
+      }
+      
+      function confirmEndGame() {
+        // Hide confirmation modal
+        document.getElementById('endGameConfirmModal').style.display = 'none';
+        
+        // Set flag to allow page leave (since this is intentional game end)
+        allowPageLeave = true;
+        
+        console.log('Player confirmed end game - fetching session statistics...');
+        
+        // Clear all timers and reset state
+        resetGame();
+        
+        // Fetch session statistics before updating database
+        fetch('/gameee/session-stats', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            session_id: gameState.sessionId
+          })
+        })
+        .then(response => response.json())
+        .then(statsData => {
+          console.log('Session statistics fetched:', statsData);
+          
+          // Show session statistics modal
+          showSessionStatistics(statsData);
+          
+          // After showing stats, update database and redirect
+          setTimeout(() => {
+            updateDatabaseAndRedirect();
+          }, 5000); // Show stats for 5 seconds before redirecting
+        })
+        .catch(error => {
+          console.error('Error fetching session statistics:', error);
+          // If stats fetch fails, still proceed with end game
+          updateDatabaseAndRedirect();
+        });
+      }
+      
+      function updateDatabaseAndRedirect() {
+        // Update game_started to 2 in the database before redirecting
+        fetch('/gameee/end-game', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            session_id: gameState.sessionId
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Database updated successfully:', data);
+          // Redirect to end game session page with session_id
+          window.location.href = `/endgamesession?session_id=${gameState.sessionId}`;
+        })
+        .catch(error => {
+          console.error('Error updating database:', error);
+          // Still redirect even if database update fails
+          window.location.href = `/endgamesession?session_id=${gameState.sessionId}`;
+        });
+      }
+      
+      function showSessionStatistics(statsData) {
+        // Create and show session statistics modal
+        const statsModal = document.createElement('div');
+        statsModal.className = 'session-stats-modal';
+        statsModal.style.cssText = `
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0,0,0,0.8);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 10000;
+        `;
+        
+        const statsContent = document.createElement('div');
+        statsContent.className = 'session-stats-content';
+        statsContent.style.cssText = `
+          background: white;
+          padding: 30px;
+          border-radius: 15px;
+          max-width: 600px;
+          width: 90%;
+          text-align: center;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        `;
+        
+        let playersStatsHTML = '';
+        if (statsData.playerStats && statsData.playerStats.length > 0) {
+          playersStatsHTML = statsData.playerStats.map(player => `
+            <div style="background: #f8f9fa; padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #007bff;">
+              <strong>${player.user_name}</strong><br>
+              <span style="color: #28a745;">Correct: ${player.correct_answers}</span> | 
+              <span style="color: #dc3545;">Player Attempts: ${player.total_questions}</span> | 
+              <span style="color: #007bff;">Score: ${player.score.toFixed(1)}%</span><br>
+              <small style="color: #666; margin-top: 5px; display: block;">Session Total Attempts: ${statsData.totalQuestionAttempts}</small>
+            </div>
+          `).join('');
+        } else {
+          playersStatsHTML = '<p style="color: #666; font-style: italic;">No player statistics available</p>';
+        }
+        
+        statsContent.innerHTML = `
+          <h2 style="color: #333; margin-bottom: 20px;">🎯 Session Statistics</h2>
+          <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+            <h3 style="margin: 0 0 10px 0;">Session ID: ${statsData.sessionId}</h3>
+            <p style="margin: 0; font-size: 18px;"><strong>Total Question Attempts: ${statsData.totalQuestionAttempts}</strong></p>
+          </div>
+          <h3 style="color: #333; margin-bottom: 15px;">Player Scores</h3>
+          ${playersStatsHTML}
+          <div style="margin-top: 20px; padding: 15px; background: #e9ecef; border-radius: 8px;">
+            <small style="color: #666;">
+              Score = (Player Correct Answers ÷ Session Total Attempts) × 100%<br>
+              Redirecting to results page in 5 seconds...
+            </small>
+          </div>
+        `;
+        
+        statsModal.appendChild(statsContent);
+        document.body.appendChild(statsModal);
+        
+        // Remove modal after 5 seconds
+        setTimeout(() => {
+          if (statsModal.parentNode) {
+            statsModal.parentNode.removeChild(statsModal);
+          }
+        }, 5000);
+      }
+      
+      function cancelEndGame() {
+        // Hide confirmation modal
+        document.getElementById('endGameConfirmModal').style.display = 'none';
+        
+        // Resume all timers that were paused
+        resumeAllTimers();
+        
+        console.log('Player canceled end game - continuing to play');
+      }
+      
+      function pauseAllTimers() {
+        console.log('Pausing all timers for end game confirmation...');
+        
+        // Store current timer states for resuming later
+        gameState.endGamePausedState = {
+          countdownWasRunning: false,
+          buzzWasRunning: false,
+          answerWasRunning: false,
+          pausedTimeLeft: 0,
+          pausedTimerType: null
+        };
+        
+        // Pause countdown timer (reading/buzz period)
+        if (gameState.countdownTimer) {
+          const numberElement = document.getElementById('countdownNumber');
+          const currentText = numberElement.textContent;
+          
+          // Parse remaining time from display
+          if (currentText.includes('seconds')) {
+            const match = currentText.match(/(\d+)\s+seconds/);
+            if (match) {
+              gameState.endGamePausedState.pausedTimeLeft = parseInt(match[1]);
+            }
+          } else if (currentText.includes('minute')) {
+            const minuteMatch = currentText.match(/(\d+)\s+minute/);
+            const secondMatch = currentText.match(/and\s+(\d+)\s+seconds/);
+            const minutes = minuteMatch ? parseInt(minuteMatch[1]) : 0;
+            const seconds = secondMatch ? parseInt(secondMatch[1]) : 0;
+            gameState.endGamePausedState.pausedTimeLeft = minutes * 60 + seconds;
+          }
+          
+          // Determine timer type
+          const textElement = document.querySelector('.countdown-text');
+          gameState.endGamePausedState.pausedTimerType = textElement.textContent === 'Reading Time' ? 'reading' : 'buzz';
+          gameState.endGamePausedState.countdownWasRunning = true;
+          
+          clearInterval(gameState.countdownTimer);
+          gameState.countdownTimer = null;
+        }
+        
+        // Pause buzz timer
+        if (gameState.buzzTimer) {
+          gameState.endGamePausedState.buzzWasRunning = true;
+          clearTimeout(gameState.buzzTimer);
+          gameState.buzzTimer = null;
+        }
+        
+        // Pause answer timer
+        if (gameState.answerTimer) {
+          gameState.endGamePausedState.answerWasRunning = true;
+          clearInterval(gameState.answerTimer);
+          gameState.answerTimer = null;
+        }
+      }
+      
+      function resumeAllTimers() {
+        console.log('Resuming all timers after end game confirmation...');
+        
+        if (!gameState.endGamePausedState) return;
+        
+        // Resume countdown timer if it was running
+        if (gameState.endGamePausedState.countdownWasRunning && gameState.endGamePausedState.pausedTimeLeft > 0) {
+          if (gameState.endGamePausedState.pausedTimerType === 'reading') {
+            resumeReadingTimer(gameState.endGamePausedState.pausedTimeLeft);
+          } else if (gameState.endGamePausedState.pausedTimerType === 'buzz') {
+            resumeBuzzTimer(gameState.endGamePausedState.pausedTimeLeft);
+          }
+        }
+        
+        // Resume answer timer if it was running
+        if (gameState.endGamePausedState.answerWasRunning) {
+          // Get current answer timer display to calculate remaining time
+          const answerCountdownElement = document.getElementById('answerCountdown');
+          if (answerCountdownElement) {
+            const timeText = answerCountdownElement.textContent;
+            const timeParts = timeText.split(':');
+            if (timeParts.length === 2) {
+              const minutes = parseInt(timeParts[0]);
+              const seconds = parseInt(timeParts[1]);
+              const totalSeconds = minutes * 60 + seconds;
+              
+              // Restart answer timer from current position
+              startAnswerTimerFromTime(totalSeconds);
+            }
+          }
+        }
+        
+        // Clear the paused state
+        gameState.endGamePausedState = null;
+      }
+      
+      function startAnswerTimerFromTime(startTime) {
+        console.log(`Resuming answer timer from ${startTime} seconds...`);
+        
+        let timeLeft = startTime;
+        const countdownElement = document.getElementById('answerCountdown');
+        
+        // Function to format time as MM:SS
+        function formatAnswerTime(seconds) {
+          const minutes = Math.floor(seconds / 60);
+          const remainingSeconds = seconds % 60;
+          return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+        }
+        
+        countdownElement.textContent = formatAnswerTime(timeLeft);
+        
+        // Start countdown
+        gameState.answerTimer = setInterval(() => {
+          timeLeft--;
+          countdownElement.textContent = formatAnswerTime(timeLeft);
+          
+          // Change color when time is running out
+          if (timeLeft <= 30) {
+            countdownElement.style.color = '#ff4444';
+            countdownElement.style.fontWeight = 'bold';
+          } else if (timeLeft <= 60) {
+            countdownElement.style.color = '#ff8800';
+          }
+          
+          if (timeLeft <= 0) {
+            // Time's up - consider as wrong answer
+            clearInterval(gameState.answerTimer);
+            gameState.answerTimer = null;
+            handleAnswerTimeout();
+          }
+        }, 1000);
+      }
+      
+      function startReadingPeriod() {
+        console.log('Starting 10-second reading period...');
+        
+        // Set reading period state
+        gameState.readingPeriod = true;
+        gameState.buzzedIn = false; // Reset buzz state for new question
+        
+        // Show countdown timer
+        const timerElement = document.getElementById('countdownTimer');
+        const numberElement = document.getElementById('countdownNumber');
+        const statusElement = document.getElementById('countdownStatus');
+        
+        timerElement.style.display = 'block';
+        statusElement.textContent = 'Players can only read the question. Buzzing disabled.';
+        
+        let timeLeft = 10;
+        numberElement.textContent = timeLeft + ' seconds';
+        
+        // Start countdown
+        gameState.countdownTimer = setInterval(() => {
+          timeLeft--;
+          if (timeLeft > 0) {
+            numberElement.textContent = timeLeft + ' seconds';
+          } else {
+            numberElement.textContent = '0 seconds';
+          }
+          
+          if (timeLeft <= 0) {
+            // Reading period over
+            clearInterval(gameState.countdownTimer);
+            gameState.countdownTimer = null;
+            gameState.readingPeriod = false;
+            
+            // Update status
+            statusElement.textContent = 'Buzzing now enabled! Press your key to buzz in!';
+            numberElement.textContent = 'BUZZ!';
+            
+            // Record when buzzing becomes available for timing
+            gameState.questionStartTime = Date.now();
+            
+            console.log('Reading period ended - buzzing now enabled!');
+            
+            // Start 1-minute buzz timer
+            startBuzzTimer();
+            
+            // Don't hide countdown here - let it continue showing during buzz period
+          }
+        }, 1000);
+      }
+      
+      function startBuzzTimer() {
+        console.log('Starting 1-minute buzz timer...');
+        
+        // Don't create new timer elements, continue using existing ones
+        const timerElement = document.getElementById('countdownTimer');
+        const textElement = document.querySelector('.countdown-text');
+        const numberElement = document.getElementById('countdownNumber');
+        const statusElement = document.getElementById('countdownStatus');
+        
+        // Update timer display for buzz period
+        textElement.textContent = 'Buzz Time';
+        statusElement.textContent = 'Press your key to buzz in! Auto-select if no one buzzes.';
+        
+        let timeLeft = 60; // 60 seconds
+        
+        // Function to format time display
+        function formatTime(seconds) {
+          if (seconds >= 60) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            if (remainingSeconds === 0) {
+              return minutes + ' minute' + (minutes > 1 ? 's' : '');
+            } else {
+              return minutes + ' minute' + (minutes > 1 ? 's' : '') + ' and ' + remainingSeconds + ' seconds';
+            }
+          } else {
+            return seconds + ' seconds';
+          }
+        }
+        
+        numberElement.textContent = formatTime(timeLeft);
+        
+        // Start countdown for buzz period
+        gameState.countdownTimer = setInterval(() => {
+          timeLeft--;
+          if (timeLeft > 0) {
+            numberElement.textContent = formatTime(timeLeft);
+          } else {
+            numberElement.textContent = '0 seconds';
+          }
+          
+          if (timeLeft <= 0) {
+            // Time's up - hide timer after full duration (10 seconds reading + 60 seconds buzzing = 70 seconds total)
+            clearInterval(gameState.countdownTimer);
+            gameState.countdownTimer = null;
+            timerElement.style.display = 'none';
+          }
+        }, 1000);
+        
+        // Start 1-minute timer for automatic player selection
+        gameState.buzzTimer = setTimeout(() => {
+          if (!gameState.buzzedIn) {
+            console.log('No player buzzed within 1 minute - selecting random player...');
+            selectRandomPlayer();
+          }
+        }, gameState.buzzTimeLimit);
+      }
+      
+      function selectRandomPlayer() {
+        // Get available players (non-empty player names)
+        const availablePlayers = [];
+        gameState.playerNames.forEach((name, index) => {
+          if (name && name.trim() !== '') {
+            availablePlayers.push({
+              index: index,
+              playerNumber: index + 1,
+              name: name
+            });
+          }
+        });
+        
+        if (availablePlayers.length === 0) {
+          console.log('No available players found!');
+          return;
+        }
+        
+        // Randomly select a player
+        const randomIndex = Math.floor(Math.random() * availablePlayers.length);
+        const selectedPlayer = availablePlayers[randomIndex];
+        
+        console.log('Randomly selected player:', selectedPlayer);
+        
+        // Simulate buzz for the selected player
+        gameState.buzzTime = Date.now();
+        gameState.buzzedIn = true;
+        gameState.currentPlayer = selectedPlayer.playerNumber;
+        
+        // Set background color based on player
+        const bgClasses = ['bg-red', 'bg-green', 'bg-blue', 'bg-yellow'];
+        document.body.className = bgClasses[selectedPlayer.index];
+        
+        // Show notification
+        const notification = document.getElementById('topNotification');
+        notification.textContent = `Time's up! ${selectedPlayer.name} (Player ${selectedPlayer.playerNumber}) was randomly selected!`;
+        notification.style.display = 'block';
+        
+        // Show question after 3 seconds
+        setTimeout(() => {
+          notification.style.display = 'none';
+          showQuestion();
+        }, 3000);
+      }
+      
+      // Optional: Close modal if user clicks outside of it
+      window.onclick = function(event) {
+        var modal = document.getElementById('rulesModal');
+        if (event.target == modal) {
+          closeModal();
+        }
+      }
+      
+      // Global variable to control page leave confirmation
+      let allowPageLeave = false;
+      
+      // Add beforeunload event listener to detect page leave attempts
+      window.addEventListener('beforeunload', function(event) {
+        // If page leave is explicitly allowed (after confirmation), don't show warning
+        if (allowPageLeave) {
+          return;
+        }
+        
+        // Show browser's built-in confirmation dialog
+        const message = 'Are you sure you want to leave the game? The current session will be ended.';
+        
+        // For modern browsers
+        event.preventDefault();
+        event.returnValue = message;
+        
+        // For older browsers
+        return message;
+      });
+      
+      // Function to handle leave page confirmation
+      function confirmLeavePage() {
+        console.log('Player confirmed leaving page - ending game session...');
+        
+        // Hide the confirmation modal
+        document.getElementById('leavePageConfirmModal').style.display = 'none';
+        
+        // Set flag to allow page leave
+        allowPageLeave = true;
+        
+        // Clear all timers and reset state
+        resetGame();
+        
+        // Update database to end game session
+        fetch('/gameee/end-game', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            session_id: gameState.sessionId
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Database updated successfully for page leave:', data);
+          // Redirect to end game session page
+          window.location.href = `/endgamesession?session_id=${gameState.sessionId}`;
+        })
+        .catch(error => {
+          console.error('Error updating database for page leave:', error);
+          // Still redirect even if database update fails
+          window.location.href = `/endgamesession?session_id=${gameState.sessionId}`;
+        });
+      }
+      
+      // Function to cancel leaving page
+      function cancelLeavePage() {
+        console.log('Player canceled leaving page - staying in game...');
+        
+        // Hide the confirmation modal
+        document.getElementById('leavePageConfirmModal').style.display = 'none';
+        
+        // Resume all timers that were paused
+        resumeAllTimers();
+        
+        // Don't change allowPageLeave flag - keep it false to continue showing warnings
+      }
+      
+      // Ability System Functions
+      function showAbilityModal() {
+        console.log('Showing ability modal');
+        
+        // Pause all game timers
+        pauseAllTimers();
+        
+        // Set ability states
+        gameState.abilityActive = false; // Not active for buzzing yet
+        gameState.abilityBuzzPeriod = false; // Buzz period hasn't started
+        gameState.abilityCountdown = 5; // 5 second countdown
+        gameState.abilityWinner = null;
+        
+        // Show the ability modal with centering
+        const modal = document.getElementById('abilityModal');
+        modal.classList.add('show');
+        
+        // Initial display - countdown phase
+        document.getElementById('abilityMessage').textContent = 'Get ready! Ability buzzing starts in:';
+        document.getElementById('abilityCountdownDisplay').textContent = gameState.abilityCountdown;
+        document.getElementById('abilityWinnerDisplay').textContent = '';
+        document.getElementById('abilityQRCode').style.display = 'none';
+        
+        // Create audio for initial countdown sound effects
+        function playInitialCountdownSound() {
+          try {
+            const audio = new Audio('/music/beeb.mp3'); // Using beeb.mp3 for initial countdown
+            audio.volume = 0.4; // Volume for initial countdown
+            audio.currentTime = 0; // Start from beginning
+            audio.play().catch(e => console.log('Audio play failed:', e));
+          } catch (error) {
+            console.log('Audio creation failed:', error);
+          }
+        }
+        
+        // Play initial sound
+        playInitialCountdownSound();
+        
+        // Start 5-second countdown timer
+        gameState.abilityTimer = setInterval(() => {
+          gameState.abilityCountdown--;
+          document.getElementById('abilityCountdownDisplay').textContent = gameState.abilityCountdown;
+          
+          // Play sound for each countdown step
+          if (gameState.abilityCountdown > 0) {
+            playInitialCountdownSound();
+            
+            // Add visual effects for urgency during initial countdown
+            if (gameState.abilityCountdown <= 2) {
+              document.getElementById('abilityCountdownDisplay').style.color = '#ff4444';
+              document.getElementById('abilityCountdownDisplay').style.fontSize = '32px';
+            } else if (gameState.abilityCountdown <= 3) {
+              document.getElementById('abilityCountdownDisplay').style.color = '#ff8800';
+              document.getElementById('abilityCountdownDisplay').style.fontSize = '28px';
+            }
+          }
+          
+          if (gameState.abilityCountdown <= 0) {
+            // Reset countdown display styles before transitioning to buzz period
+            document.getElementById('abilityCountdownDisplay').style.color = '';
+            document.getElementById('abilityCountdownDisplay').style.fontSize = '';
+            
+            // Countdown finished - start buzzing period
+            startAbilityBuzzPeriod();
+          }
+        }, 1000);
+        
+        console.log('Ability countdown started - 5 seconds until buzzing begins');
+      }
+      
+      function startAbilityBuzzPeriod() {
+        console.log('Starting ability buzz period');
+        
+        // Stop countdown timer
+        if (gameState.abilityTimer) {
+          clearInterval(gameState.abilityTimer);
+          gameState.abilityTimer = null;
+        }
+        
+        // Enable buzzing
+        gameState.abilityActive = true;
+        gameState.abilityBuzzPeriod = true;
+        
+        // Update display - simple buzz message
+        document.getElementById('abilityMessage').textContent = 'BUZZ NOW! First to buzz wins the ability!';
+        document.getElementById('abilityCountdownDisplay').textContent = 'BUZZ!';
+        document.getElementById('abilityCountdownDisplay').classList.add('buzz-active');
+        
+        // Set a timeout for buzz period (5 seconds)
+        gameState.abilityBuzzTimer = setTimeout(() => {
+          if (!gameState.abilityWinner) {
+            endAbilityPeriod(); // No one buzzed in time
+          }
+        }, 5000); // 5 second buzz window
+        
+        console.log('Ability buzz period active - players can now buzz! 5 second window.');
+      }
+      
+      function buzzerPressed(player) {
+        if (!gameState.abilityBuzzPeriod || gameState.abilityWinner) {
+          return; // Buzz period not active or already has winner
+        }
+        
+        const playerName = gameState.playerNames[player - 1];
+        if (!playerName) return; // Player doesn't exist
+        
+        console.log(`${playerName} (Player ${player}) buzzed for ability!`);
+        
+        // Set winner
+        gameState.abilityWinner = player;
+        
+        // Stop buzz timer
+        if (gameState.abilityBuzzTimer) {
+          clearTimeout(gameState.abilityBuzzTimer);
+          gameState.abilityBuzzTimer = null;
+        }
+        
+        // Disable further buzzing
+        gameState.abilityBuzzPeriod = false;
+        
+        // Update display
+        document.getElementById('abilityMessage').textContent = `🎉 ${playerName} wins the ability! 🎉`;
+        document.getElementById('abilityWinnerDisplay').textContent = `Winner: ${playerName} (Player ${player})`;
+        document.getElementById('abilityCountdownDisplay').textContent = 'WINNER!';
+        document.getElementById('abilityCountdownDisplay').classList.remove('buzz-active');
+        document.getElementById('abilityCountdownDisplay').classList.add('winner');
+        
+        // Reset countdown display styles
+        document.getElementById('abilityCountdownDisplay').style.color = '';
+        document.getElementById('abilityCountdownDisplay').style.fontSize = '';
+        
+        // Show QR code for ability activation
+        showAbilityQRCode(playerName, player);
+        
+        console.log(`Ability winner: ${playerName} (Player ${player})`);
+      }
+      
+      function showAbilityQRCode(playerName, playerNumber) {
+        // Show QR scanner section
+        document.getElementById('abilityQRCode').style.display = 'block';
+        document.getElementById('abilityQRCode').innerHTML = `
+          <div style="border: 2px solid #fff; padding: 15px; text-align: center; background: rgba(255,255,255,0.1); margin: 15px 0; border-radius: 12px;">
+            <h3 style="color: #4caf50; margin-bottom: 12px; font-size: 16px;">📱 Scan QR Code to Activate Ability 📱</h3>
+            <button onclick="openQRScanner('${playerName}', ${playerNumber})" style="
+              background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+              color: white;
+              border: none;
+              padding: 15px 25px;
+              font-size: 16px;
+              font-weight: bold;
+              border-radius: 8px;
+              cursor: pointer;
+              transition: all 0.3s;
+              margin: 10px 0;
+              box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+            ">
+              📷 Open QR Scanner
+            </button>
+            <p style="color: #4caf50; font-weight: bold; font-size: 14px; margin: 8px 0;">
+              Winner: ${playerName} (Player ${playerNumber})
+            </p>
+            <p style="font-size: 12px; margin: 8px 0; opacity: 0.9;">
+              Use your camera to scan the QR code!
+            </p>
+          </div>
+        `;
+        
+        // Show continue button
+        document.getElementById('abilityContinueBtn').style.display = 'block';
+      }
+      
+      function endAbilityPeriod() {
+        console.log('Ability period ended');
+        
+        // Stop any running timers
+        if (gameState.abilityTimer) {
+          clearInterval(gameState.abilityTimer);
+          gameState.abilityTimer = null;
+        }
+        
+        if (gameState.abilityBuzzTimer) {
+          clearTimeout(gameState.abilityBuzzTimer);
+          gameState.abilityBuzzTimer = null;
+        }
+        
+        if (gameState.abilityWinner) {
+          // Winner found - show final message
+          const playerName = gameState.playerNames[gameState.abilityWinner - 1];
+          document.getElementById('abilityMessage').textContent = `🎉 ${playerName} gets the ability! 🎉`;
+        } else {
+          // No winner - timeout
+          document.getElementById('abilityMessage').textContent = '⏰ Time up! No one buzzed for the ability!';
+          document.getElementById('abilityCountdownDisplay').textContent = 'TIME UP!';
+          document.getElementById('abilityCountdownDisplay').classList.add('timeout');
+          
+          // Show continue button for timeout case too
+          document.getElementById('abilityContinueBtn').style.display = 'block';
+        }
+        
+        // Set ability as inactive
+        gameState.abilityActive = false;
+        gameState.abilityBuzzPeriod = false;
+      }
+      
+      function closeAbilityModal() {
+        console.log('Closing ability modal');
+        
+        // Hide modal
+        const modal = document.getElementById('abilityModal');
+        modal.classList.remove('show');
+        
+        // Reset ability state
+        gameState.abilityActive = false;
+        gameState.abilityWinner = null;
+        
+        // Hide continue button
+        document.getElementById('abilityContinueBtn').style.display = 'none';
+        
+        // Reset countdown display classes
+        const countdownDisplay = document.getElementById('abilityCountdownDisplay');
+        countdownDisplay.classList.remove('buzz-active', 'winner', 'timeout');
+        
+        // Resume game timers
+        resumeAllTimers();
+        
+        // Continue with next question after ability modal
+        resetGame();
+        displayCurrentQuestion();
+        
+        console.log('Ability modal closed - game resumed');
+      }
+      
+      function openQRScanner(playerName, playerNumber) {
+        console.log(`Opening QR scanner for ${playerName} (Player ${playerNumber})`);
+        
+        // Check if the browser supports camera access
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+          // Request camera permission and open scanner
+          navigator.mediaDevices.getUserMedia({ 
+            video: { 
+              facingMode: 'environment' // Use back camera for better QR scanning
+            } 
+          })
+          .then(function(stream) {
+            // Create video element for camera feed
+            const scannerHTML = `
+              <div style="border: 2px solid #fff; padding: 15px; text-align: center; background: rgba(255,255,255,0.1); margin: 15px 0; border-radius: 12px;">
+                <h3 style="color: #4caf50; margin-bottom: 12px; font-size: 16px;">📱 QR Scanner Active 📱</h3>
+                <video id="qrVideo" autoplay playsinline style="width: 200px; height: 150px; border: 2px solid #fff; border-radius: 8px; margin: 10px 0;"></video>
+                <canvas id="qrCanvas" style="display: none;"></canvas>
+                <br>
+                <button onclick="stopQRScanner()" style="
+                  background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+                  color: white;
+                  border: none;
+                  padding: 10px 20px;
+                  font-size: 14px;
+                  font-weight: bold;
+                  border-radius: 6px;
+                  cursor: pointer;
+                  margin: 10px 5px;
+                ">Stop Scanner</button>
+                <p style="color: #4caf50; font-weight: bold; font-size: 14px; margin: 8px 0;">
+                  Winner: ${playerName} (Player ${playerNumber})
+                </p>
+                <p style="font-size: 12px; margin: 8px 0; opacity: 0.9;">
+                  Point camera at QR code to scan
+                </p>
+                <div id="scanStatus" style="color: #ffeb3b; font-size: 12px; margin: 5px 0;">
+                  Scanning for QR codes...
+                </div>
+              </div>
+            `;
+            
+            document.getElementById('abilityQRCode').innerHTML = scannerHTML;
+            
+            // Start video stream
+            const video = document.getElementById('qrVideo');
+            video.srcObject = stream;
+            
+            // Start QR detection when video is ready
+            video.addEventListener('loadedmetadata', () => {
+              startQRDetection(video, playerName, playerNumber);
+            });
+            
+            console.log('QR scanner opened successfully');
+          })
+          .catch(function(error) {
+            console.error('Error accessing camera:', error);
+            alert('Unable to access camera. Please check permissions and try again.');
+          });
+        } else {
+          alert('Camera not supported on this device/browser.');
+        }
+      }
+      
+      function startQRDetection(video, playerName, playerNumber) {
+        const canvas = document.getElementById('qrCanvas');
+        const context = canvas.getContext('2d');
+        
+        // Set canvas size to match video
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        
+        // QR detection loop
+        function detectQR() {
+          if (video.readyState === video.HAVE_ENOUGH_DATA) {
+            // Draw video frame to canvas
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            // Get image data for QR detection
+            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+            
+            // Detect QR code using jsQR library
+            const qrCode = jsQR(imageData.data, imageData.width, imageData.height);
+            
+            if (qrCode) {
+              console.log('QR Code detected:', qrCode.data);
+              handleQRDetection(qrCode.data, playerName, playerNumber);
+              return; // Stop detection loop
+            }
+          }
+          
+          // Continue scanning
+          requestAnimationFrame(detectQR);
+        }
+        
+        // Start detection
+        detectQR();
+      }
+      
+      function handleQRDetection(qrData, playerName, playerNumber) {
+        console.log(`QR Code scanned: "${qrData}" by ${playerName}`);
+        
+        // Update scan status to show detected text
+        const statusElement = document.getElementById('scanStatus');
+        if (statusElement) {
+          statusElement.innerHTML = `<strong>QR Text Detected: "${qrData}"</strong>`;
+          statusElement.style.color = '#4caf50';
+          statusElement.style.fontSize = '14px';
+        }
+        
+        // Stop the scanning loop and show results after 1 second
+        setTimeout(() => {
+          checkQRCodeMatch(qrData, playerName, playerNumber);
+        }, 1000);
+      }
+      
+      function checkQRCodeMatch(qrData, playerName, playerNumber) {
+        // List of valid QR codes with exact text matching
+        const validQRCodes = {
+          'QR001': {
+            image: 'QR001.png',
+            ability: 'Double Points Power',
+            description: 'Doubles your score for the next 3 questions'
+          },
+          'QR002': {
+            image: 'QR002.png', 
+            ability: 'Extra Time Boost',
+            description: 'Adds 10 extra seconds to question timers'
+          },
+          'QR004': {
+            image: 'QR004.png',
+            ability: 'No Luck',
+            description: 'Better luck next time!'
+          }
+        };
+        
+        // Clean the scanned text (remove whitespace, convert to uppercase)
+        const cleanQRData = qrData.trim().toUpperCase();
+        
+        console.log(`Checking QR text: "${cleanQRData}"`);
+        console.log('Valid QR codes available:', Object.keys(validQRCodes));
+        
+        // Check for exact match
+        if (validQRCodes[cleanQRData]) {
+          console.log(`✅ Valid QR Code "${cleanQRData}" recognized!`);
+          showQRSuccess(cleanQRData, validQRCodes[cleanQRData], playerName, playerNumber);
+        } else {
+          console.log(`❌ QR Code "${cleanQRData}" not recognized`);
+          showQRError(qrData, playerName, playerNumber);
+        }
+      }
+      
+      function showQRSuccess(qrText, qrInfo, playerName, playerNumber) {
+        // Stop video stream
+        const video = document.getElementById('qrVideo');
+        if (video && video.srcObject) {
+          const tracks = video.srcObject.getTracks();
+          tracks.forEach(track => track.stop());
+        }
+        
+        // Check if QR001, QR002, or QR004 was scanned
+        if (qrText === 'QR001' || qrText === 'QR002' || qrText === 'QR004') {
+          // Send ability activation request to server
+          fetch('/gameee/activate-ability', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              session_id: gameState.sessionId,
+              username: playerName,
+              qr_text: qrText
+            })
+          })
+          .then(response => response.json())
+          .then(data => {
+            console.log('Ability activation response:', data);
+            
+            if (data.success) {
+              if (data.no_luck) {
+                // Handle QR004 - No Luck message
+                document.getElementById('abilityQRCode').innerHTML = `
+                  <div style="border: 2px solid #ff9800; padding: 15px; text-align: center; background: rgba(255, 152, 0, 0.2); margin: 15px 0; border-radius: 12px;">
+                    <h3 style="color: #ff9800; margin-bottom: 12px; font-size: 16px;">✅ QR Code Successfully Scanned! ✅</h3>
+                    
+                    <p style="color: #ff9800; font-weight: bold; font-size: 18px; margin: 10px 0;">
+                      😔 ${data.message} 😔
+                    </p>
+                    
+                    <div style="background: rgba(255, 152, 0, 0.3); padding: 12px; border-radius: 8px; margin: 10px 0;">
+                      <p style="color: #fff; font-weight: bold; font-size: 16px; margin: 0;">
+                        🎯 Better luck next time, ${data.username}!
+                      </p>
+                    </div>
+                  </div>
+                `;
+              } else {
+                // Handle QR001/QR002 - Score bonus message
+                document.getElementById('abilityQRCode').innerHTML = `
+                  <div style="border: 2px solid #4caf50; padding: 15px; text-align: center; background: rgba(76, 175, 80, 0.2); margin: 15px 0; border-radius: 12px;">
+                    <h3 style="color: #4caf50; margin-bottom: 12px; font-size: 16px;">✅ QR Code Successfully Scanned! ✅</h3>
+                    
+                    <p style="color: #4caf50; font-weight: bold; font-size: 18px; margin: 10px 0;">
+                      🎉 ${data.message} 🎉
+                    </p>
+                    
+                    <div style="background: rgba(76, 175, 80, 0.3); padding: 12px; border-radius: 8px; margin: 10px 0;">
+                      <p style="color: #fff; font-weight: bold; font-size: 16px; margin: 0;">
+                        💰 Score Updated: ${data.previous_score} → ${data.new_score} (+${data.points_added})
+                      </p>
+                    </div>
+                  </div>
+                `;
+              }
+            } else {
+              // Show error from server
+              document.getElementById('abilityQRCode').innerHTML = `
+                <div style="border: 2px solid #ff9800; padding: 15px; text-align: center; background: rgba(255, 152, 0, 0.2); margin: 15px 0; border-radius: 12px;">
+                  <h3 style="color: #ff9800; margin-bottom: 12px; font-size: 16px;">⚠️ Ability Activation Failed ⚠️</h3>
+                  <p style="color: #fff; font-size: 14px;">${data.error}</p>
+                </div>
+              `;
+            }
+          })
+          .catch(error => {
+            console.error('Error activating ability:', error);
+            // Show network error
+            document.getElementById('abilityQRCode').innerHTML = `
+              <div style="border: 2px solid #f44336; padding: 15px; text-align: center; background: rgba(244, 67, 54, 0.2); margin: 15px 0; border-radius: 12px;">
+                <h3 style="color: #f44336; margin-bottom: 12px; font-size: 16px;">❌ Network Error ❌</h3>
+                <p style="color: #fff; font-size: 14px;">Failed to activate ability. Please try again.</p>
+              </div>
+            `;
+          });
+        } else {
+          // Other QR codes (not QR001 or QR002) - show normal success without score bonus
+          document.getElementById('abilityQRCode').innerHTML = `
+            <div style="border: 2px solid #4caf50; padding: 15px; text-align: center; background: rgba(76, 175, 80, 0.2); margin: 15px 0; border-radius: 12px;">
+              <h3 style="color: #4caf50; margin-bottom: 12px; font-size: 16px;">✅ QR Code Successfully Scanned! ✅</h3>
+              
+              <div style="background: rgba(255,255,255,0.9); padding: 10px; border-radius: 8px; margin: 10px 0;">
+                <p style="color: #333; font-weight: bold; font-size: 16px; margin: 5px 0;">
+                  📱 Detected QR Text: "<span style="color: #4caf50;">${qrText}</span>"
+                </p>
+              </div>
+              
+              <div style="margin: 15px 0;">
+                <img src="/QR pic/${qrInfo.image}" alt="${qrText}" style="width: 80px; height: 80px; border: 2px solid #4caf50; border-radius: 8px;">
+              </div>
+              
+              <p style="color: #4caf50; font-weight: bold; font-size: 16px; margin: 10px 0;">
+                🎉 ${playerName} activated: ${qrInfo.ability}! 🎉
+              </p>
+              
+              <p style="color: #fff; font-size: 14px; margin: 8px 0; background: rgba(76, 175, 80, 0.3); padding: 8px; border-radius: 6px;">
+                💪 ${qrInfo.description}
+              </p>
+              
+              <p style="color: #4caf50; font-weight: bold; font-size: 12px; margin: 8px 0;">
+                Player ${playerNumber} • Ability Activated
+              </p>
+            </div>
+          `;
+        }
+        
+        console.log(`${playerName} successfully activated "${qrInfo.ability}" with QR text: "${qrText}"`);
+      }
+      
+      function showQRError(originalQRData, playerName, playerNumber) {
+        // Stop video stream
+        const video = document.getElementById('qrVideo');
+        if (video && video.srcObject) {
+          const tracks = video.srcObject.getTracks();
+          tracks.forEach(track => track.stop());
+        }
+        
+        // Update display to show the exact text that was scanned
+        document.getElementById('abilityQRCode').innerHTML = `
+          <div style="border: 2px solid #ff9800; padding: 15px; text-align: center; background: rgba(255, 152, 0, 0.2); margin: 15px 0; border-radius: 12px;">
+            <h3 style="color: #ff9800; margin-bottom: 12px; font-size: 16px;">⚠️ QR Code Not Recognized ⚠️</h3>
+            
+            <div style="background: rgba(255,255,255,0.9); padding: 10px; border-radius: 8px; margin: 10px 0;">
+              <p style="color: #333; font-weight: bold; font-size: 14px; margin: 5px 0;">
+                📱 Scanned QR Text: "<span style="color: #ff9800;">${originalQRData}</span>"
+              </p>
+            </div>
+            
+            <div style="background: rgba(255, 152, 0, 0.1); padding: 10px; border-radius: 8px; margin: 10px 0;">
+              <p style="color: #fff; font-size: 13px; margin: 5px 0;">
+                ❌ This QR code is not in our ability database
+              </p>
+              <p style="color: #fff; font-size: 12px; margin: 5px 0;">
+                Valid QR codes: <strong>"QR001"</strong>, <strong>"QR002"</strong>, <strong>"QR004"</strong>
+              </p>
+            </div>
+            
+            <p style="color: #ff9800; font-weight: bold; font-size: 12px; margin: 8px 0;">
+              Player: ${playerName} (${playerNumber})
+            </p>
+            
+            <button onclick="showAbilityQRCode('${playerName}', ${playerNumber})" style="
+              background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+              color: white;
+              border: none;
+              padding: 10px 20px;
+              font-size: 14px;
+              font-weight: bold;
+              border-radius: 6px;
+              cursor: pointer;
+              margin: 10px 0;
+            ">🔄 Try Scanning Again</button>
+          </div>
+        `;
+        
+        console.log(`❌ QR scan failed for ${playerName}. Text "${originalQRData}" not recognized.`);
+      }
+      
+      function stopQRScanner() {
+        console.log('Stopping QR scanner');
+        
+        // Stop video stream
+        const video = document.getElementById('qrVideo');
+        if (video && video.srcObject) {
+          const tracks = video.srcObject.getTracks();
+          tracks.forEach(track => track.stop());
+        }
+        
+        // Reset to scanner button
+        const playerName = gameState.playerNames[gameState.abilityWinner - 1];
+        const playerNumber = gameState.abilityWinner;
+        showAbilityQRCode(playerName, playerNumber);
+      }
+
+      // ====== BGM FUNCTIONALITY ======
+      
+      // Create audio element
+      const bgmAudio = new Audio('/music/music2.mp3');
+      bgmAudio.loop = true; // Enable looping
+      bgmAudio.volume = 0.5; // Set default volume to 50%
+      
+      let isPlaying = false;
+      
+      // Get DOM elements
+      const toggleBtn = document.getElementById('toggle-bgm-btn-game');
+      const volumeSlider = document.getElementById('volume-slider-game');
+      const volumePercent = document.getElementById('volume-percent-game');
+      const autoClickTrigger = document.getElementById('auto-click-trigger-game');
+      
+      // Auto-click trigger functionality
+      autoClickTrigger.addEventListener('click', function() {
+        console.log('Auto-click triggered for gameee page');
+        
+        if (!isPlaying) {
+          bgmAudio.play().then(() => {
+            console.log('BGM started successfully');
+            isPlaying = true;
+            toggleBtn.textContent = '⏸️ Pause Music';
+          }).catch(error => {
+            console.log('Failed to start BGM:', error);
+          });
+        }
+      });
+      
+      // Simulate auto-click when page loads
+      window.addEventListener('load', function() {
+        setTimeout(() => {
+          autoClickTrigger.click();
+        }, 1000); // Wait 1 second after page load
+      });
+      
+      // Toggle play/pause button
+      toggleBtn.addEventListener('click', function() {
+        if (isPlaying) {
+          bgmAudio.pause();
+          isPlaying = false;
+          toggleBtn.textContent = '▶️ Play Music';
+        } else {
+          bgmAudio.play().then(() => {
+            isPlaying = true;
+            toggleBtn.textContent = '⏸️ Pause Music';
+          }).catch(error => {
+            console.log('Failed to play BGM:', error);
+          });
+        }
+      });
+      
+      // Volume control
+      volumeSlider.addEventListener('input', function() {
+        const volume = this.value / 100;
+        bgmAudio.volume = volume;
+        volumePercent.textContent = this.value + '%';
+      });
+      
+      // Handle audio events
+      bgmAudio.addEventListener('ended', function() {
+        // This shouldn't trigger due to loop=true, but just in case
+        if (isPlaying) {
+          bgmAudio.currentTime = 0;
+          bgmAudio.play();
+        }
+      });
+      
+      bgmAudio.addEventListener('error', function(e) {
+        console.error('BGM audio error:', e);
+        toggleBtn.textContent = '❌ Music Error';
+      });
+      
+      // Update button state when audio starts/stops
+      bgmAudio.addEventListener('play', function() {
+        isPlaying = true;
+        toggleBtn.textContent = '⏸️ Pause Music';
+      });
+      
+      bgmAudio.addEventListener('pause', function() {
+        isPlaying = false;
+        toggleBtn.textContent = '▶️ Play Music';
+      });
+      
+      console.log('Game BGM system initialized');

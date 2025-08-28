@@ -1,0 +1,433 @@
+/* Body styling with background image */
+body {
+  font-family: Arial, sans-serif;
+  background-image: url('/pic/mainpagebg.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  animation: fadeInBackground 1.5s ease-out;
+}
+
+/* Styling for Join Game Page */
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  animation: slideInFromBottom 1s ease-out 0.3s both;
+}
+
+/* Header styling for "Join Game Session" title */
+.container h1 {
+  background-image: url('/pic/mainpagewood.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: white;
+  text-align: center;
+  font-size: 2em;
+  margin: 0 0 30px 0;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  animation: slideInFromTop 0.8s ease-out 0.5s both;
+  transition: all 0.3s ease;
+}
+
+.header h1 {
+  text-align: center;
+  font-size: 2em;
+  margin-bottom: 20px;
+}
+
+.content {
+  text-align: center;
+}
+
+/* Manual Entry Section */
+.manual-entry {
+  margin: 30px 0;
+  padding: 25px;
+  background-image: url('/pic/mainpagewood.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 15px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  animation: fadeInScale 1s ease-out 1.2s both;
+  backdrop-filter: blur(5px);
+}
+
+.manual-entry h2 {
+  margin-top: 0;
+  color: white;
+  font-size: 1.5em;
+  text-align: center;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  animation: bounceInUp 0.8s ease-out 1.4s both;
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 12px 15px;
+  margin: 15px 0;
+  font-size: 1.2em;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  animation: slideInFromLeft 0.6s ease-out 1.6s both;
+}
+
+input[type="text"]:focus {
+  outline: none;
+  border-color: #cebb2c;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+  transform: translateY(-2px);
+}
+
+button {
+  padding: 12px 25px;
+  font-size: 1.1em;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+  font-weight: bold;
+  position: relative;
+  overflow: hidden;
+  animation: bounceInUp 0.8s ease-out 1.8s both;
+}
+
+button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+button:hover {
+  background-color: #45a049;
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+}
+
+button:hover::before {
+  left: 100%;
+}
+
+button:active {
+  transform: translateY(-1px) scale(1.02);
+}
+
+/* QR Scanner Styling */
+.scanner-section {
+  margin: 40px 0;
+  padding: 25px;
+  background-image: url('/pic/mainpagewood.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 30px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  animation: fadeInScale 1s ease-out 0.8s both;
+  backdrop-filter: blur(5px);
+}
+
+.scanner-section h2 {
+  margin-top: 0;
+  color: white;
+  font-size: 1.5em;
+  text-align: center;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  animation: bounceInUp 0.8s ease-out 1s both;
+}
+
+.qr-scanner-section {
+  margin: 30px 0;
+  padding: 20px;
+  border: 2px dashed #ddd;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+}
+
+.qr-scanner-section h3 {
+  margin-top: 0;
+  color: #333;
+  font-size: 1.3em;
+}
+
+#qr-reader {
+  width: 100%;
+  max-width: 400px;
+  margin: 15px auto;
+  border: 3px solid #4CAF50;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
+  animation: pulseGlow 2s ease-in-out infinite alternate;
+}
+
+.scanner-controls {
+  margin: 15px 0;
+  animation: fadeInSlideUp 1s ease-out 2s both;
+}
+
+.scanner-controls button {
+  margin: 5px;
+  padding: 8px 16px;
+  font-size: 1em;
+}
+
+#start-scanner {
+  background-color: #4CAF50;
+}
+
+#stop-scanner {
+  background-color: #f44336;
+}
+
+#stop-scanner:hover {
+  background-color: #da190b;
+}
+
+.qr-result {
+  margin-top: 15px;
+  padding: 15px;
+  background-color: rgba(232, 245, 232, 0.95);
+  border: 2px solid #4CAF50;
+  border-radius: 8px;
+  font-weight: bold;
+  color: #2e7d32;
+  animation: successPulse 0.6s ease-out;
+  backdrop-filter: blur(5px);
+}
+
+.scanner-status {
+  margin: 10px 0;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 0.9em;
+  font-weight: bold;
+  animation: slideInFromRight 0.6s ease-out;
+}
+
+.status-ready {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  border: 1px solid #bbdefb;
+}
+
+.status-scanning {
+  background-color: #fff3e0;
+  color: #f57c00;
+  border: 1px solid #ffcc02;
+}
+
+.status-error {
+  background-color: #ffebee;
+  color: #c62828;
+  border: 1px solid #ef9a9a;
+}
+
+/* Keyframe Animations */
+@keyframes fadeInBackground {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes bounceInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(100px) scale(0.8);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-10px) scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fadeInSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulseGlow {
+  from {
+    box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
+  }
+  to {
+    box-shadow: 0 8px 30px rgba(76, 175, 80, 0.6), 0 0 20px rgba(76, 175, 80, 0.4);
+  }
+}
+
+@keyframes successPulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Additional styling for QR success message */
+.qr-message {
+  margin: 30px 0;
+  padding: 45px;
+  background-image: url('/pic/mainpagewood.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 10px;
+  animation: successPulse 0.8s ease-out;
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+}
+
+.qr-message .success-message {
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  margin: 0;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Enhanced scanner container */
+.scanner-container {
+  
+  padding: 20px;
+  border-radius: 12px;
+  margin: 20px 0;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  
+  animation: fadeInScale 1s ease-out 1s both;
+}
+
+/* Footer Section - Back to Main Page Link */
+.footer {
+  text-align: center;
+  margin-top: 40px;
+  animation: fadeInSlideUp 1s ease-out 2.2s both;
+}
+
+.footer a {
+  display: inline-block;
+  background-color: #4CAF50;
+  color: white;
+  text-decoration: none;
+  padding: 18px 25px;
+  border-radius: 25px;
+  font-weight: bold;
+  font-size: 1.1em;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.footer a::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.footer a:hover {
+  background-color: #45a049;
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+  text-decoration: none;
+}
+
+.footer a:hover::before {
+  left: 100%;
+}

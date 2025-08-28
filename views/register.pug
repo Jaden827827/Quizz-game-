@@ -1,0 +1,46 @@
+doctype html
+html
+  head
+    title User Registration
+    script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js")
+    link(rel="stylesheet", href="/css/register.css")
+  body
+    // Auto-click trigger for BGM
+    button#auto-click-trigger(style="display: none;")
+    
+    .registration-container
+      .scroll-window
+        h1 User Registration
+        form#register-form(method='post')
+          .form-group
+            label(for='name') Name:
+            input#name(type='text', name='name', required)
+
+          .form-group
+            label(for='email') Email:
+            input#email(type='email', name='email', required)
+
+          .form-group
+            label(for='password') Password:
+            input#password(type='password', name='password', required)
+
+          .button-group
+            button#register-button.register-btn(type='submit') Register
+            button.reset-btn(type='reset') Reset
+
+          p#email-error.error-message
+
+        p.login-link
+          | Already have an account?
+          a(href="/login") Login here
+    
+    script.
+      document.getElementById('register-form').addEventListener('submit', function(event) {
+        var password = document.getElementById('password').value;
+        if (password.length < 6) {
+          alert('Password must be at least 6 characters long.');
+          event.preventDefault();
+        }
+      });
+    script(src='/javascripts/checkEmail.js')
+    script(src="/js/bgm.js")

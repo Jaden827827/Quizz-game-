@@ -1,0 +1,256 @@
+/* /public/css/registerP.css - RegisterP Page Styling */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f4;
+  background-image: url('/pic/home background.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  min-height: 100vh;
+  color: #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Registration Container */
+.registration-container {
+  background-color: rgba(255, 255, 255, 0.95);
+  padding: 2.5rem;
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  width: 100%;
+  max-width: 450px;
+  animation: slideUp 0.6s ease-out;
+}
+
+.registration-container h1 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #333;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+/* Error Message */
+.error-message {
+  background-color: rgba(220, 53, 69, 0.9);
+  color: rgb(62, 7, 7);
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-weight: bold;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.5s ease-in;
+}
+
+/* Input Groups */
+.input-group {
+  margin-bottom: 1.5rem;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  color: #555;
+  font-size: 1rem;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Button Group */
+.button-group {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Primary Button */
+#register-button {
+  flex: 2;
+  background-color: #4c5eaf;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+#register-button:hover {
+  background-color: #ad6b21;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+}
+
+#register-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Reset Button */
+button[type="reset"] {
+  flex: 1;
+  background-color: #6c757d;
+  color: white;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: bold;
+}
+
+button[type="reset"]:hover {
+  background-color: #5a6268;
+  transform: translateY(-2px);
+}
+
+/* Link Sections */
+.login-link {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.login-link p {
+  margin: 0;
+  color: #666;
+}
+
+.login-link a, .back-link a {
+  color: #4CAF50;
+  text-decoration: none;
+  font-weight: bold;
+  margin-left: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.login-link a:hover, .back-link a:hover {
+  color: #3e8e41;
+  text-decoration: underline;
+}
+
+.back-link {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.back-link a {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background-color: rgba(108, 117, 125, 0.1);
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+.back-link a:hover {
+  background-color: rgba(108, 117, 125, 0.2);
+  transform: translateY(-1px);
+}
+
+/* Form Validation States */
+.input-group.focused label {
+  color: #4CAF50;
+}
+
+input.valid {
+  border-color: #28a745;
+  background-color: rgba(40, 167, 69, 0.05);
+}
+
+input.invalid {
+  border-color: #dc3545;
+  background-color: rgba(220, 53, 69, 0.05);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Loading State */
+.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.loading button {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .registration-container {
+    margin: 1rem;
+    padding: 2rem;
+    max-width: 90%;
+  }
+  
+  .registration-container h1 {
+    font-size: 1.5rem;
+  }
+  
+  .button-group {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  #register-button, button[type="reset"] {
+    flex: none;
+  }
+}
+
+/* Focus States for Accessibility */
+button:focus, input:focus, a:focus {
+  outline: 2px solid #4CAF50;
+  outline-offset: 2px;
+}

@@ -1,0 +1,345 @@
+/* mainpage.css */
+
+body {
+  font-family: Arial, sans-serif;
+  background-image: url('/pic/mainpagebg.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  animation: fadeInBackground 1.5s ease-out;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  animation: slideInFromBottom 1s ease-out 0.3s both;
+}
+
+.header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-image: url('/pic/mainpagewood.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  padding: 15px;
+  color: rgb(252, 243, 243);
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(243, 238, 238, 0.3);
+  animation: slideInFromTop 0.8s ease-out 0.5s both;
+  transition: all 0.3s ease;
+}
+
+.header .welcome {
+  font-size: 24px;
+  animation: textGlow 2s ease-in-out infinite alternate;
+  text-align: center;
+}
+
+.content {
+  display: flex;
+  justify-content: center;
+  gap: 50px; /* Increased gap between columns */
+  margin-top: 30px;
+  animation: fadeInScale 1s ease-out 0.8s both;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.btn-container {
+  animation: bounceInUp 0.8s ease-out;
+  animation-delay: calc(1s + var(--delay, 0s));
+  animation-fill-mode: both;
+}
+
+.btn-container:nth-child(1) { --delay: 0.1s; }
+.btn-container:nth-child(2) { --delay: 0.2s; }
+.btn-container:nth-child(3) { --delay: 0.3s; }
+.btn-container:nth-child(4) { --delay: 0.4s; }
+
+.btn-container a {
+  display: block;
+  background: linear-gradient(135deg, #f3f0f0, #7d867e);
+  color: rgb(249, 249, 249);
+  padding: 15px 25px;
+  text-decoration: none;
+  font-size: 18px;
+  border-radius: 10px;
+  text-align: center;
+  width: 200px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* New Session button with newsessionicon.png as main background */
+.btn-container a[href="/session"] {
+  background-image: url('/pic/newsessionicon.png');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 350px; /* Increased width */
+  height: 150px; /* Increased height */
+  padding: 0;
+  color: transparent;
+  text-indent: -9999px;
+  overflow: hidden;
+}
+
+/* Join Game button with joingameicon.png as main background */
+.btn-container a[href="/joingame"] {
+  background-image: url('/pic/joingameicon.png');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 350px; /* Increased width */
+  height: 150px; /* Increased height */
+  padding: 0;
+  color: transparent;
+  text-indent: -9999px;
+  overflow: hidden;
+}
+
+/* Leaderboard button with leaderboardicon.png as main background */
+.btn-container a[href="/leaderboard"] {
+  background-image: url('/pic/leaderboardicon.png');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 350px; /* Increased width */
+  height: 150px; /* Increased height */
+  padding: 0;
+  color: transparent;
+  text-indent: -9999px;
+  overflow: hidden;
+}
+/* Join Game button with rulesss.png as main background */
+.btn-container a[href="/rulesss"] {
+  background-image: url('/pic/rulesss.png');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 350px; /* Increased width */
+  height: 150px; /* Increased height */
+  padding: 0;
+  color: transparent;
+  text-indent: -9999px;
+  overflow: hidden;
+}
+/* Log Out button with logouticon.png as main background */
+.btn-container a[href="/logout"], .btn-container a#logout-btn {
+  background-image: url('/pic/logouticon.png');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 350px; /* Increased width */
+  height: 150px; /* Increased height */
+  padding: 0;
+  color: transparent;
+  text-indent: -9999px;
+  overflow: hidden;
+}
+
+
+
+.btn-container a[href="/session"]:hover {
+  background-image: url('/pic/newsessionicon.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transform: translateY(-5px) scale(1.05);
+  filter: brightness(1.1);
+}
+
+.btn-container a::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+
+
+/* New Session button hover - override general hover */
+.btn-container a[href="/session"]:hover {
+  background-image: url('/pic/newsessionicon.png');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  transform: translateY(-5px) scale(1.05);
+  filter: brightness(1.1);
+}
+
+/* Join Game button hover - override general hover */
+.btn-container a[href="/joingame"]:hover {
+  background-image: url('/pic/joingameicon.png');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  transform: translateY(-5px) scale(1.05);
+  filter: brightness(1.1);
+}
+
+/* Leaderboard button hover - override general hover */
+.btn-container a[href="/leaderboard"]:hover {
+  background-image: url('/pic/leaderboardicon.png');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  transform: translateY(-5px) scale(1.05);
+  filter: brightness(1.1);
+}
+
+/* Log Out button hover - override general hover */
+.btn-container a[href="/logout"]:hover, .btn-container a#logout-btn:hover {
+  background-image: url('/pic/logouticon.png');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  transform: translateY(-5px) scale(1.05);
+  filter: brightness(1.1);
+}
+
+.btn-container a:hover::before {
+  left: 100%;
+}
+
+.btn-container a:active {
+  transform: translateY(-2px) scale(1.02);
+}
+
+.footer {
+  text-align: center;
+  margin-top: 40px;
+  animation: fadeInSlideUp 1s ease-out 1.2s both;
+}
+
+.footer a {
+  color: #fdfffd;
+  font-size: 16px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+  color: #f0ebe6;
+  background-color: rgba(76, 175, 80, 0.1);
+  transform: scale(1.05);
+}
+
+/* Keyframe Animations */
+@keyframes fadeInBackground {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes bounceInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(100px) scale(0.8);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-10px) scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fadeInSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes textGlow {
+  from {
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+  }
+  to {
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.5);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
+  }
+  
+  .header {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+  
+  .content {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .btn-container a {
+    width: 250px;
+  }
+}

@@ -1,0 +1,103 @@
+//- loginjoinP.pug
+doctype html
+html
+  head
+    title #{title}
+    link(rel="stylesheet", href="/css/loginjoinP.css")
+    script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js")
+    //- BGM Control Styles
+    style.
+      
+      .auto-click-trigger {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 1px;
+        height: 1px;
+        opacity: 0;
+        pointer-events: auto;
+        z-index: 1;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+      }
+      /* Additional styles for endgame transition */
+      .info-message {
+        background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        margin: 15px 0;
+        font-weight: 500;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+      }
+      .welcome-message strong {
+        color: #4CAF50;
+        font-weight: bold;
+      }
+  body
+    //- Auto-click trigger for music autoplay bypass
+    button#auto-click-trigger.auto-click-trigger
+
+    .container
+      .header
+        h1 Login & Join Game Session
+
+      .main-content
+        if error
+          .error-message= error
+        
+        if !isLoggedIn
+          .form-container.login-form
+            h2 Login to Your Account
+            form(action="/loginjoinP/login", method="post")
+              .input-group
+                label(for="user_email") Email:
+                input(type="email", id="user_email", name="user_email", required, placeholder="Enter your email")
+              
+              .input-group
+                label(for="user_password") Password:
+                input(type="password", id="user_password", name="user_password", required, placeholder="Enter your password")
+              
+              .button-group
+                button(type="submit", class="login-btn") Login
+                a(href="/registerP", class="register-link") Don't have an account? Register here
+        else
+          .form-container.session-form
+            if fromEndGame
+              h2 🎮 Game Session Completed! Join Another Session
+              p.welcome-message 
+                | Welcome back, 
+                strong #{autoUser ? autoUser.user_name : 'Player'}
+                | ! You've been automatically logged in from the previous game session.
+              p.info-message Ready to join another exciting session? Enter a Session ID below:
+            else
+              h2 Welcome! Join a Game Session
+              p.welcome-message You are successfully logged in!
+            
+            form(action="/loginjoinP/joinsession", method="post")
+              .input-group
+                label(for="session_id") Session ID:
+                input(type="text", id="session_id", name="session_id", required, placeholder="Enter Session ID (e.g., SESS123)")
+              
+              .button-group
+                button(type="submit", class="join-btn") Join Session
+                if fromEndGame
+                  a(href="/homeP", class="back-link") Log Out
+                else
+                  a(href="/homeP", class="back-link") Log Out
+
+      .footer
+        
+
+    //- Music Controls UI
+    .bgm-controls
+      button#toggle-bgm-btn.bgm-btn ▶️ Play
+      .volume-control
+        span.volume-label 🔊
+        input#volume-slider.volume-slider(type="range" min="0" max="100" value="50")
+        span#volume-percent 50%
+
+    script(src="/js/loginjoinP.js")
+    script(src="/js/bgm.js")    // Link to the background music control script

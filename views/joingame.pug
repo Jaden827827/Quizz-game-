@@ -1,0 +1,154 @@
+doctype html
+html
+  head
+    title Join Game
+    link(rel="stylesheet", href="/css/joingame.css")
+    script(src="https://unpkg.com/html5-qrcode" type="text/javascript")
+  body
+
+    button#auto-click-trigger(style="display: none;")
+    .container
+      h1 Join Game Session
+      
+      if qrSessionId
+        .qr-message
+          p.success-message ✓ Session ID loaded from QR code: #{qrSessionId}
+      
+      // QR Code Scanner Section
+      .scanner-section
+        h2 Scan QR Code
+        .scanner-container
+          #qr-reader(style="width: 100%; max-width: 500px; margin: 0 auto;")
+          .scanner-controls
+            button#start-scan-btn(type="button")  Start Camera to Scan QR
+            button#stop-scan-btn(type="button" style="display: none;")  Stop Scanner
+        .scanner-status
+          p#scanner-message Choose camera scanning or enter Session ID manually below
+      
+      // Manual Entry Section
+      .manual-entry
+        h2 Or Enter Session ID Manually
+        form(action="/waitingroomP" method="get")
+          label(for="session_id") Enter Session ID:
+          input(type="text" id="session_id" name="session_id" placeholder="Enter Session ID or scan QR code above" value=qrSessionId || "" required)
+          button(type="submit") Join Session
+
+    .footer
+      a(href="/mainpage") Back to Main Page
+
+    script(src="/js/bgm.js")
+    script.
+      console.log(' Join Game page loaded, setting up QR scanner...');
+    
+      let html5QrCode = null;
+      let isScanning = false;
+      
+      document.addEventListener('DOMContentLoaded', function() {
+          const startBtn = document.getElementById('start-scan-btn');
+          const stopBtn = document.getElementById('stop-scan-btn');
+          const sessionInput = document.getElementById('session_id');
+          const scannerMessage = document.getElementById('scanner-message');
+          
+          // Check if html5-qrcode library is loaded
+          if (typeof Html5Qrcode === 'undefined') {
+              console.log(' HTML5 QRCode library not loaded');
+              scannerMessage.textContent = 'QR Scanner not available. Please enter Session ID manually.';
+              startBtn.style.display = 'none';
+              return;
+          }
+          
+          console.log(' HTML5 QRCode library loaded successfully');
+          
+          // Initialize QR Code scanner
+          html5QrCode = new Html5Qrcode("qr-reader");
+          
+          // Start scanning function
+          function startScanning() {
+              console.log(' Starting QR code scanning...');
+              scannerMessage.textContent = 'Starting camera... Please allow camera access when prompted.';
+              
+              const config = {
+                  fps: 10,
+                  qrbox: { width: 250, height: 250 },
+                  aspectRatio: 1.0
+              };
+              
+              html5QrCode.start(
+                  { facingMode: "environment" }, // Use back camera if available
+                  config,
+                  (decodedText, decodedResult) => {
+                      console.log(' QR Code scanned successfully:', decodedText);
+                      
+                      // Extract session ID from the URL
+                      let sessionId = '';
+                      try {
+                          const url = new URL(decodedText);
+                          sessionId = url.searchParams.get('session_id');
+                      } catch (e) {
+                          // If not a URL, assume it's just the session ID
+                          sessionId = decodedText;
+                      }
+                      
+                      if (sessionId) {
+                          console.log(' Session ID extracted:', sessionId);
+                          sessionInput.value = sessionId;
+                          scannerMessage.innerHTML = `
+                              <span style="color: green;"> QR Code scanned successfully!</span><br>
+                              Session ID: <strong>${sessionId}</strong><br>
+                              Click "Join Session" to continue.
+                          `;
+                          
+                          // Stop scanning after successful scan
+                          stopScanning();
+                      } else {
+                          scannerMessage.innerHTML = '<span style="color: orange;">⚠️ QR Code scanned but no session ID found. Please try again.</span>';
+                      }
+                  },
+                  (errorMessage) => {
+                      // Handle scan errors (usually just no QR code in view)
+                      // Don't log every frame error, just keep scanning
+                  }
+              ).then(() => {
+                  console.log(' Camera started successfully');
+                  isScanning = true;
+                  startBtn.style.display = 'none';
+                  stopBtn.style.display = 'inline-block';
+                  scannerMessage.textContent = 'Camera ready! Point your camera at a QR code to scan.';
+              }).catch(err => {
+                  console.error(' Failed to start camera:', err);
+                  scannerMessage.innerHTML = `
+                      <span style="color: red;"> Camera access failed: ${err.message}</span><br>
+                      Please check camera permissions or enter Session ID manually below.
+                  `;
+                  startBtn.textContent = ' Try Camera Again';
+              });
+          }
+          
+          // Stop scanning function
+          function stopScanning() {
+              if (html5QrCode && isScanning) {
+                  html5QrCode.stop().then(() => {
+                      console.log(' QR scanning stopped');
+                      isScanning = false;
+                      startBtn.style.display = 'inline-block';
+                      stopBtn.style.display = 'none';
+                      if (scannerMessage.textContent.includes('Camera ready')) {
+                          scannerMessage.textContent = 'Camera stopped. Click "Start Camera" to scan again.';
+                      }
+                  }).catch(err => {
+                      console.error('Error stopping scanner:', err);
+                  });
+              }
+          }
+          
+          // Event listeners
+          startBtn.addEventListener('click', startScanning);
+          stopBtn.addEventListener('click', stopScanning);
+          
+          // Stop scanner when page is about to unload
+          window.addEventListener('beforeunload', function() {
+              if (isScanning) {
+                  stopScanning();
+              }
+          });
+      });

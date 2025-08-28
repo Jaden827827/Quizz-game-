@@ -1,0 +1,812 @@
+doctype html
+html
+  head
+    title Game Session Results
+    style.
+      body {
+        font-family: 'Arial', sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        margin: 0;
+        padding: 20px;
+        min-height: 100vh;
+        color: #333;
+      }
+      
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: rgba(255,255,255,0.95);
+        border-radius: 15px;
+        padding: 40px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        text-align: center;
+      }
+      
+      .header {
+        margin-bottom: 30px;
+      }
+      
+      .header h1 {
+        color: #2c3e50;
+        font-size: 36px;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+      }
+      
+      .session-info {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 12px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+      }
+      
+      .session-info h2 {
+        margin: 0 0 15px 0;
+        font-size: 28px;
+      }
+      
+      .session-id {
+        font-size: 24px;
+        background: rgba(255,255,255,0.2);
+        padding: 15px 25px;
+        border-radius: 8px;
+        backdrop-filter: blur(10px);
+        display: inline-block;
+        margin: 10px 0;
+      }
+      
+      .message {
+        font-size: 18px;
+        color: #495057;
+        margin: 20px 0;
+      }
+      
+      .error-message {
+        background: #f8d7da;
+        color: #721c24;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        border: 1px solid #f5c6cb;
+      }
+      
+      .action-buttons {
+        margin-top: 30px;
+      }
+      
+      .btn {
+        display: inline-block;
+        padding: 12px 30px;
+        margin: 0 10px;
+        border: none;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+      
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+      
+      .btn-secondary {
+        background: #6c757d;
+        color: white;
+      }
+      
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      }
+      
+      .players-section {
+        background: #e8f5e8;
+        padding: 25px;
+        border-radius: 12px;
+        margin-bottom: 30px;
+        border-left: 5px solid #28a745;
+      }
+      
+      .players-section h3 {
+        margin: 0 0 20px 0;
+        color: #155724;
+        font-size: 22px;
+        text-align: center;
+      }
+      
+      .players-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+      }
+      
+      .player-card {
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        border-left: 4px solid #667eea;
+        text-align: center;
+        transition: transform 0.2s;
+      }
+      
+      .player-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+      }
+      
+      .player-name {
+        font-size: 16px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 5px;
+      }
+      
+      .player-accuracy {
+        font-size: 14px;
+        font-weight: bold;
+        margin-bottom: 5px;
+        padding: 5px 10px;
+        border-radius: 15px;
+        display: inline-block;
+      }
+      
+      .accuracy-high {
+        background: #d4edda;
+        color: #155724;
+      }
+      
+      .accuracy-medium {
+        background: #fff3cd;
+        color: #856404;
+      }
+      
+      .accuracy-low {
+        background: #f8d7da;
+        color: #721c24;
+      }
+      
+      .accuracy-none {
+        background: #e2e3e5;
+        color: #6c757d;
+      }
+      
+      .player-id {
+        font-size: 12px;
+        color: #666;
+      }
+      
+      .no-players {
+        text-align: center;
+        color: #666;
+        font-style: italic;
+        padding: 20px;
+      }
+
+      /* Winner Podium Styles */
+      .winner-podium {
+        background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+        padding: 30px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+        box-shadow: 0 8px 32px rgba(255, 215, 0, 0.3);
+        text-align: center;
+      }
+      
+      .winner-podium h2 {
+        color: #000;
+        font-size: 32px;
+        margin: 0 0 25px 0;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      }
+      
+      .podium-display {
+        display: flex;
+        justify-content: center;
+        align-items: end;
+        margin: 30px 0;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+      
+      .podium-place {
+        background: rgba(255, 255, 255, 0.9);
+        padding: 20px;
+        border-radius: 15px;
+        text-align: center;
+        min-width: 150px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        color: #333;
+      }
+      
+      .podium-first {
+        order: 2;
+        background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+        color: #000;
+        transform: scale(1.1);
+        height: 200px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        border: 3px solid #FFD700;
+      }
+      
+      .podium-second {
+        order: 1;
+        background: linear-gradient(135deg, #C0C0C0 0%, #A8A8A8 100%);
+        color: #000;
+        height: 150px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        border: 3px solid #C0C0C0;
+      }
+      
+      .podium-third {
+        order: 3;
+        background: linear-gradient(135deg, #CD7F32 0%, #B8732A 100%);
+        color: #fff;
+        height: 120px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        border: 3px solid #CD7F32;
+      }
+      
+      .rank-medal {
+        font-size: 2.5em;
+        margin-bottom: 10px;
+      }
+      
+      .player-name-podium {
+        font-size: 18px;
+        font-weight: bold;
+        margin: 5px 0;
+      }
+      
+      .player-score-podium {
+        font-size: 16px;
+        margin: 5px 0;
+      }
+      
+      .player-position {
+        font-size: 14px;
+        font-weight: bold;
+        margin: 5px 0;
+      }
+      
+      .champion-announcement {
+        background: rgba(0,0,0,0.1);
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+      }
+      
+      .champion-announcement h3 {
+        color: #000;
+        font-size: 24px;
+        margin: 0 0 10px 0;
+      }
+      
+      .champion-name {
+        font-size: 28px;
+        font-weight: bold;
+        color: #000;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      }
+      
+      .complete-rankings {
+        background: #f8f9fa;
+        padding: 25px;
+        border-radius: 12px;
+        margin-bottom: 30px;
+        border-left: 5px solid #667eea;
+      }
+      
+      .complete-rankings h3 {
+        color: #333;
+        font-size: 22px;
+        margin: 0 0 20px 0;
+        text-align: center;
+      }
+      
+      .ranking-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      
+      .ranking-item {
+        display: flex;
+        align-items: center;
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      
+      .ranking-position {
+        font-size: 20px;
+        font-weight: bold;
+        margin-right: 15px;
+        min-width: 40px;
+      }
+      
+      .ranking-player {
+        flex: 1;
+        font-size: 16px;
+        font-weight: bold;
+      }
+      
+      .ranking-score {
+        font-size: 16px;
+        color: #667eea;
+        font-weight: bold;
+      }
+
+      /* Questions Section Styles */
+      .questions-section {
+        background: #fff3cd;
+        padding: 25px;
+        border-radius: 12px;
+        margin-bottom: 30px;
+        border-left: 5px solid #ffc107;
+      }
+      
+      .questions-header {
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0;
+        transition: all 0.3s ease;
+      }
+      
+      .questions-header:hover {
+        background: rgba(255, 193, 7, 0.1);
+        border-radius: 8px;
+        padding: 10px;
+        margin: -10px;
+      }
+      
+      .questions-header h3 {
+        color: #856404;
+        font-size: 22px;
+        margin: 0;
+        text-align: left;
+      }
+      
+      .question-count {
+        font-size: 16px;
+        font-weight: normal;
+        color: #6c757d;
+      }
+      
+      .toggle-icon {
+        font-size: 18px;
+        color: #856404;
+        transition: transform 0.3s ease;
+      }
+      
+      .toggle-icon.rotated {
+        transform: rotate(180deg);
+      }
+      
+      .questions-content {
+        margin-top: 20px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+      }
+      
+      .questions-list {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      
+      .question-item {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        border-left: 4px solid #ffc107;
+      }
+      
+      .question-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #f8f9fa;
+      }
+      
+      .question-number {
+        font-size: 18px;
+        font-weight: bold;
+        color: #333;
+      }
+      
+      .question-id {
+        font-size: 14px;
+        color: #6c757d;
+        background: #e9ecef;
+        padding: 4px 8px;
+        border-radius: 4px;
+      }
+      
+      .question-text {
+        font-size: 16px;
+        font-weight: 500;
+        color: #333;
+        margin-bottom: 15px;
+        line-height: 1.5;
+      }
+      
+      .question-options {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 8px;
+        margin-bottom: 15px;
+      }
+      
+      .option {
+        display: flex;
+        align-items: center;
+        padding: 10px 12px;
+        background: #f8f9fa;
+        border-radius: 6px;
+        border: 1px solid #dee2e6;
+        transition: all 0.2s ease;
+      }
+      
+      .option.correct-option {
+        background: #d4edda;
+        border-color: #28a745;
+        box-shadow: 0 2px 4px rgba(40, 167, 69, 0.2);
+      }
+      
+      .option-letter {
+        font-weight: bold;
+        color: #495057;
+        margin-right: 10px;
+        min-width: 20px;
+      }
+      
+      .correct-option .option-letter {
+        color: #155724;
+      }
+      
+      .option-text {
+        color: #495057;
+        line-height: 1.4;
+      }
+      
+      .correct-option .option-text {
+        color: #155724;
+        font-weight: 500;
+      }
+      
+      .correct-answer {
+        background: #d4edda;
+        color: #155724;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 14px;
+        margin-bottom: 10px;
+        border: 1px solid #28a745;
+      }
+      
+      .explanation {
+        background: #e2e3e5;
+        color: #383d41;
+        padding: 10px 12px;
+        border-radius: 6px;
+        font-size: 14px;
+        line-height: 1.4;
+        border-left: 3px solid #6c757d;
+      }
+      
+      .explanation strong {
+        color: #495057;
+      }
+      
+      .no-questions {
+        text-align: center;
+        color: #856404;
+        font-style: italic;
+        padding: 20px;
+        background: rgba(255, 193, 7, 0.1);
+        border-radius: 8px;
+        margin-top: 15px;
+      }
+
+      /* Player Attempts Styles */
+      .player-attempts {
+        margin-top: 20px;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border-left: 3px solid #6c757d;
+      }
+      
+      .attempts-header {
+        margin-bottom: 12px;
+        color: #495057;
+        font-size: 14px;
+      }
+      
+      .attempts-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      
+      .attempt-item {
+        display: grid;
+        grid-template-columns: 1fr 1fr 80px 80px;
+        gap: 10px;
+        align-items: center;
+        padding: 10px 12px;
+        border-radius: 6px;
+        border: 1px solid;
+        font-size: 13px;
+      }
+      
+      .correct-attempt {
+        background: #d4edda;
+        border-color: #28a745;
+        color: #155724;
+      }
+      
+      .wrong-attempt {
+        background: #f8d7da;
+        border-color: #dc3545;
+        color: #721c24;
+      }
+      
+      .attempt-player {
+        font-weight: bold;
+      }
+      
+      .attempt-answer {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      
+      .answer-label {
+        font-weight: 500;
+      }
+      
+      .answer-value {
+        font-weight: bold;
+        padding: 2px 6px;
+        border-radius: 3px;
+        background: rgba(0,0,0,0.1);
+      }
+      
+      .attempt-result {
+        text-align: center;
+        font-weight: bold;
+      }
+      
+      .result-correct {
+        color: #28a745;
+      }
+      
+      .result-wrong {
+        color: #dc3545;
+      }
+      
+      .attempt-time {
+        text-align: center;
+        color: #6c757d;
+      }
+      
+      @media (max-width: 768px) {
+        .attempt-item {
+          grid-template-columns: 1fr;
+          gap: 5px;
+          text-align: left;
+        }
+        
+        .attempt-result,
+        .attempt-time {
+          text-align: left;
+        }
+      }
+
+  body
+    .container
+      .header
+        h1 � Game Ended
+        
+      if error
+        .error-message
+          strong Error: #{error}
+      else
+        .session-info
+          h2 Session Completed
+          .session-id
+            strong Session ID: #{session_id}
+          if total_session_attempts !== undefined
+            .session-id
+              strong Total Questions Answered: #{total_session_attempts}
+          p.message Game has been stopped successfully
+        
+        //- Winner Podium Section
+        if players && players.length > 0
+          - var sortedByScore = players.sort((a, b) => (b.final_score || 0) - (a.final_score || 0))
+          - var topThree = sortedByScore.slice(0, 3)
+          - var champion = sortedByScore[0]
+          
+          .winner-podium
+            h2 🏆 FINAL LEADERBOARD 🏆
+            
+            //- Champion Announcement
+            if champion && champion.final_score > 0
+              .champion-announcement
+                h3 👑 CHAMPION 👑
+                .champion-name= champion.user_name
+                p
+                  strong #{champion.final_score} Points
+                p Congratulations on your victory!
+            
+            //- Top 3 Podium
+            if topThree.length > 0
+              .podium-display
+                each player, index in topThree
+                  if index === 0
+                    .podium-place.podium-first
+                      .rank-medal 🥇
+                      .player-name-podium= player.user_name
+                      .player-score-podium #{player.final_score || 0} Points
+                      .player-position 1st Place
+                  else if index === 1
+                    .podium-place.podium-second
+                      .rank-medal 🥈
+                      .player-name-podium= player.user_name
+                      .player-score-podium #{player.final_score || 0} Points
+                      .player-position 2nd Place
+                  else if index === 2
+                    .podium-place.podium-third
+                      .rank-medal 🥉
+                      .player-name-podium= player.user_name
+                      .player-score-podium #{player.final_score || 0} Points
+                      .player-position 3rd Place
+        
+        //- Complete Rankings
+        if players && players.length > 0
+          .complete-rankings
+            h3 📊 Complete Rankings
+            .ranking-list
+              each player, index in players.sort((a, b) => (b.final_score || 0) - (a.final_score || 0))
+                .ranking-item
+                  .ranking-position
+                    if index === 0
+                      | 🥇
+                    else if index === 1
+                      | 🥈
+                    else if index === 2
+                      | 🥉
+                    else
+                      | #{index + 1}
+                  .ranking-player= player.user_name
+                  .ranking-score #{player.final_score || 0} points
+        
+        if players && players.length > 0
+          .players-section
+            h3 👥 All Players in Session #{session_id}
+            .players-grid
+              each player in players
+                .player-card
+                  .player-name= player.user_name
+                  - var accuracyClass = ''
+                  - if (player.accuracy_percentage >= 80) accuracyClass = 'accuracy-high'
+                  - else if (player.accuracy_percentage >= 60) accuracyClass = 'accuracy-medium'
+                  - else if (player.accuracy_percentage > 0) accuracyClass = 'accuracy-low'
+                  - else accuracyClass = 'accuracy-none'
+                  .player-accuracy(class=accuracyClass)
+                    if player.total_questions > 0
+                      | #{player.accuracy_percentage}% of Session
+                      br
+                      small #{player.correct_answers} correct out of #{total_session_attempts} session attempts
+                    else
+                      | No questions answered
+                      br
+                      small 0 correct out of #{total_session_attempts} session attempts
+                  .player-id Player ID: #{player.player_id}
+        else
+          .players-section
+            h3 👥 Players in Session #{session_id}
+            .no-players No players found in this session
+        
+        //- Questions Section
+        if questions && questions.length > 0
+          .questions-section
+            .questions-header(onclick="toggleQuestions()")
+              h3 📋 Questions Answered in Session #{session_id} 
+                span.question-count (#{questions.length} question#{questions.length > 1 ? 's' : ''})
+              .toggle-icon#questionsToggleIcon ▼
+            .questions-content#questionsContent(style="display: none;")
+              .questions-list
+                each question, index in questions
+                  .question-item
+                    .question-header
+                      .question-number Question #{index + 1}
+                      .question-id ID: #{question.question_id}
+                    .question-text= question.question_text
+                    .question-options
+                      .option(class=question.correct_option === 'A' ? 'correct-option' : '')
+                        span.option-letter A
+                        span.option-text= question.option_a
+                      .option(class=question.correct_option === 'B' ? 'correct-option' : '')
+                        span.option-letter B
+                        span.option-text= question.option_b
+                      .option(class=question.correct_option === 'C' ? 'correct-option' : '')
+                        span.option-letter C
+                        span.option-text= question.option_c
+                      .option(class=question.correct_option === 'D' ? 'correct-option' : '')
+                        span.option-letter D
+                        span.option-text= question.option_d
+                    .correct-answer
+                      strong Correct Answer: #{question.correct_option}
+                    if question.explanation
+                      .explanation
+                        strong Explanation: 
+                        span= question.explanation
+                    
+                    //- Player Attempts Section
+                    if attempts && attempts[question.question_id]
+                      .player-attempts
+                        .attempts-header
+                          strong 👥 Player Attempts:
+                        .attempts-list
+                          each attempt in attempts[question.question_id]
+                            .attempt-item(class=attempt.is_correct ? 'correct-attempt' : 'wrong-attempt')
+                              .attempt-player= attempt.user_name
+                              .attempt-answer
+                                span.answer-label Answer: 
+                                span.answer-value= attempt.answer_chosen === 'X' ? 'Timeout' : (attempt.answer_chosen === 'P' ? 'Passed' : attempt.answer_chosen)
+                              .attempt-result
+                                if attempt.is_correct
+                                  span.result-correct ✓ Correct
+                                else
+                                  span.result-wrong ✗ Wrong
+                              if attempt.response_time_second
+                                .attempt-time
+                                  small Response: #{attempt.response_time_second}s
+        else if questions && questions.length === 0
+          .questions-section
+            h3 📋 Questions Answered in Session #{session_id}
+            .no-questions No questions were answered in this session
+        
+      .action-buttons
+        if !current_user
+          a.btn.btn-primary(href="/mainpage") Return to Main Page
+          a.btn.btn-secondary(href="/session") Start New Game
+        a.btn.btn-secondary(href="/leaderboard") Go to Leaderboard
+        if current_user
+          a.btn.btn-secondary(href=`/loginjoinP?from_endgame=true&user_id=${current_user.user_id}`) Join Another Session
+
+    script.
+      function toggleQuestions() {
+        const content = document.getElementById('questionsContent');
+        const icon = document.getElementById('questionsToggleIcon');
+        
+        if (content.style.display === 'none' || content.style.display === '') {
+          content.style.display = 'block';
+          icon.textContent = '▲';
+          icon.classList.add('rotated');
+        } else {
+          content.style.display = 'none';
+          icon.textContent = '▼';
+          icon.classList.remove('rotated');
+        }
+      }

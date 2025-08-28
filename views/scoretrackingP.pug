@@ -1,0 +1,879 @@
+extends layout
+
+block content
+  link(rel="stylesheet", href="/css/scoretrackingP.css")
+  
+  //- BGM Control Styles for ScoreTracking
+  style.
+    .bgm-controls-scoretracking {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+      font-family: Arial, sans-serif;
+      min-width: 200px;
+    }
+    .bgm-btn-scoretracking {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      width: 100%;
+      transition: all 0.3s ease;
+    }
+    .bgm-btn-scoretracking:hover {
+      background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+      transform: translateY(-1px);
+    }
+    .volume-control-scoretracking {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .volume-slider-scoretracking {
+      flex: 1;
+      height: 6px;
+      border-radius: 3px;
+      background: #333;
+      outline: none;
+      cursor: pointer;
+    }
+    .volume-slider-scoretracking::-webkit-slider-thumb {
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #667eea;
+      cursor: pointer;
+    }
+    .volume-slider-scoretracking::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #667eea;
+      cursor: pointer;
+      border: none;
+    }
+    .volume-label-scoretracking {
+      font-size: 12px;
+      color: #ccc;
+    }
+    #volume-percent-scoretracking {
+      font-size: 12px;
+      color: white;
+      min-width: 35px;
+    }
+    .auto-click-trigger-scoretracking {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: auto;
+      z-index: 1;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+    }
+    
+    /* Live indicator animation */
+    #live-indicator {
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+    
+    /* Custom colors for game status */
+    #game-status {
+      color: darkgreen !important;
+      font-weight: bold;
+    }
+    
+    /* Style for playing status badges */
+    .status-badge.playing {
+      color: darkblue !important;
+      font-weight: bold;
+    }
+
+  //- Auto-click trigger for music autoplay bypass
+  button#auto-click-trigger-scoretracking.auto-click-trigger-scoretracking
+  
+  .scoretracking-container
+    .scoretracking-header
+      h1 🏆 Live Score Tracking 
+        span#live-indicator(style="color: #4CAF50; font-size: 0.6em; margin-left: 10px;") ● LIVE
+      .session-info
+        span.session-label Session ID:
+        span.session-id(id="session-id") #{sessionId}
+        button.copy-btn(onclick="copySessionId()") 📋 Copy
+        .session-details
+          span.session-detail Players in Session: #{players ? players.length : 0}
+          if currentUserName
+            span.session-detail Current Player: #{currentUserName}
+      
+      .game-status
+        span.status-indicator(id="game-status") 🎮 Game in Progress
+        
+
+    .scoretracking-content
+      .players-scoreboard
+        h2 📊 Live Leaderboard
+        .scoreboard-header
+          .rank-col Rank
+          .player-col Player
+          .score-col Score
+          .status-col Status
+        
+        .players-list(id="players-scoreboard")
+          if players && players.length > 0
+            each player, index in players
+              .player-score-row(data-user-id=player.user_id class=player.user_id == currentUserId ? 'current-user' : '')
+                .rank-col #{index + 1}
+                .player-col
+                  span.player-name #{player.user_name}
+                  if player.user_id == currentUserId
+                    span.you-indicator (You)
+                .score-col.score-value #{player.current_score}
+                .status-col
+                  span.status-badge(class=player.game_started === 2 ? 'finished' : 'playing') 
+                    | #{player.game_started === 2 ? '✅ Finished' : '🎮 Playing'}
+          else
+            .no-players
+              h3 ⚠️ No Players Found
+              p No players found in session: <strong>#{sessionId}</strong>
+              p This might happen if:
+              ul
+                li The game hasn't started yet
+                li There are no players in this session
+                li There's a database connection issue
+              .debug-info
+                p Session ID: #{sessionId}
+                p Current User: #{currentUserName}
+                p Players Array: #{players ? 'Defined' : 'Undefined'}
+                p Players Length: #{players ? players.length : 'N/A'}
+
+      .scoretracking-actions
+        .action-buttons
+          button.btn.btn-refresh(onclick="refreshScores()") 🔄 Refresh Scores
+          button.btn.btn-leaderboard(onclick="goToLeaderboard()") 🏆 Final Leaderboard
+          button.btn.btn-back(onclick="backToWaiting()") ← Back to Waiting Room
+
+    .game-notifications
+      .notification(id="score-notification" style="display: none;")
+        span.notification-text
+        button.notification-close(onclick="closeNotification()") ×
+
+  //- Music Controls UI for ScoreTracking (Hidden)
+  .bgm-controls-scoretracking(style="display: none;")
+    button#toggle-bgm-btn-scoretracking.bgm-btn-scoretracking ▶️ Play Music
+    .volume-control-scoretracking
+      span.volume-label-scoretracking 🔊
+      input#volume-slider-scoretracking.volume-slider-scoretracking(type="range" min="0" max="100" value="50")
+      span#volume-percent-scoretracking 50%
+
+  script(src="/js/scoretrackingP.js")
+  script(src="/js/scoretrackingBGM.js")
+  script.
+    // Initialize with session data
+    const sessionId = '#{sessionId}';
+    const currentUserId = #{currentUserId};
+    const initialPlayers = !{JSON.stringify(players)};
+    
+    // Socket.IO connection
+    const socket = io();
+    
+    // Join session room for real-time updates
+    socket.emit('joinSession', sessionId);
+    
+    // Listen for score updates
+    socket.on('scoreUpdate', (data) => {
+      if (data.sessionId === sessionId) {
+        updateScoreboard(data.players);
+        showNotification(`Score updated for ${data.playerName}!`);
+      }
+    });
+    
+    // Listen for game end
+    socket.on('gameEnded', (data) => {
+      if (data.sessionId === sessionId) {
+        updateGameStatus('🏁 Game Finished');
+        showNotification('Game has ended! Check final scores.');
+        setTimeout(() => {
+          goToLeaderboard();
+        }, 3000);
+      }
+    });
+    
+    // Enhanced update scoreboard function with live refresh indicators
+    function updateScoreboard(players) {
+      const scoreboard = document.getElementById('players-scoreboard');
+      
+      // Add loading indicator
+      const leaderboardHeader = document.querySelector('h2');
+      if (leaderboardHeader) {
+        leaderboardHeader.innerHTML = '📊 Live Leaderboard <span style="color: #4CAF50; font-size: 0.8em;">🔄 Updating...</span>';
+        
+        // Remove the updating indicator after animation
+        setTimeout(() => {
+          leaderboardHeader.innerHTML = '📊 Live Leaderboard <span style="color: #4CAF50; font-size: 0.8em;">✅ Live</span>';
+        }, 800);
+        
+        setTimeout(() => {
+          leaderboardHeader.innerHTML = '📊 Live Leaderboard';
+        }, 2000);
+      }
+      
+      // Sort players by score (descending) for proper ranking
+      const sortedPlayers = players.sort((a, b) => {
+        const scoreA = a.current_score || 0;
+        const scoreB = b.current_score || 0;
+        if (scoreB !== scoreA) {
+          return scoreB - scoreA;
+        }
+        return a.user_name.localeCompare(b.user_name);
+      });
+      
+      scoreboard.innerHTML = '';
+      
+      sortedPlayers.forEach((player, index) => {
+        const row = document.createElement('div');
+        row.className = `player-score-row ${player.user_id === currentUserId ? 'current-user' : ''}`;
+        row.setAttribute('data-user-id', player.user_id);
+        
+        // Add rank badges for top 3
+        let rankDisplay = index + 1;
+        if (index === 0) rankDisplay = '🥇';
+        else if (index === 1) rankDisplay = '🥈';
+        else if (index === 2) rankDisplay = '🥉';
+        
+        row.innerHTML = `
+          <div class="rank-col">${rankDisplay}</div>
+          <div class="player-col">
+            <span class="player-name">${player.user_name}</span>
+            ${player.user_id === currentUserId ? '<span class="you-indicator">(You)</span>' : ''}
+          </div>
+          <div class="score-col score-value">${player.current_score || 0}</div>
+          <div class="status-col">
+            <span class="status-badge ${player.game_started === 2 ? 'finished' : 'playing'}">
+              ${player.game_started === 2 ? '✅ Finished' : '🎮 Playing'}
+            </span>
+          </div>
+        `;
+        
+        // Add animation for new updates
+        row.style.opacity = '0';
+        row.style.transform = 'translateX(-10px)';
+        scoreboard.appendChild(row);
+        
+        // Animate in
+        setTimeout(() => {
+          row.style.transition = 'all 0.3s ease';
+          row.style.opacity = '1';
+          row.style.transform = 'translateX(0)';
+        }, index * 50);
+      });
+      
+      // Update last refresh time indicator
+      const now = new Date();
+      const timeString = now.toLocaleTimeString();
+      
+      // Add or update refresh indicator
+      let refreshIndicator = document.getElementById('last-refresh-indicator');
+      if (!refreshIndicator) {
+        refreshIndicator = document.createElement('div');
+        refreshIndicator.id = 'last-refresh-indicator';
+        refreshIndicator.style.cssText = `
+          position: fixed;
+          top: 10px;
+          right: 10px;
+          background: rgba(76, 175, 80, 0.9);
+          color: white;
+          padding: 5px 10px;
+          border-radius: 15px;
+          font-size: 12px;
+          z-index: 1001;
+          transition: all 0.3s ease;
+        `;
+        document.body.appendChild(refreshIndicator);
+      }
+      
+      refreshIndicator.textContent = `🔄 Updated: ${timeString}`;
+      refreshIndicator.style.opacity = '1';
+      
+      // Fade out the indicator after 3 seconds
+      setTimeout(() => {
+        refreshIndicator.style.opacity = '0.3';
+      }, 3000);
+    }
+    
+    // Copy session ID function
+    function copySessionId() {
+      const sessionIdElement = document.getElementById('session-id');
+      const copyBtn = sessionIdElement.parentElement.querySelector('.copy-btn');
+      
+      navigator.clipboard.writeText(sessionId).then(() => {
+        copyBtn.textContent = '✅ Copied!';
+        copyBtn.style.backgroundColor = '#28a745';
+        
+        setTimeout(() => {
+          copyBtn.textContent = '📋 Copy';
+          copyBtn.style.backgroundColor = '';
+        }, 2000);
+        
+        showNotification('Session ID copied to clipboard!');
+      }).catch(() => {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = sessionId;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        
+        copyBtn.textContent = '✅ Copied!';
+        setTimeout(() => {
+          copyBtn.textContent = '📋 Copy';
+        }, 2000);
+      });
+    }
+    
+    // Enhanced manual refresh function (now works alongside auto-refresh)
+    function refreshScores() {
+      // Show manual refresh indicator
+      const refreshBtn = document.querySelector('.btn-refresh');
+      if (refreshBtn) {
+        const originalText = refreshBtn.textContent;
+        refreshBtn.textContent = '🔄 Refreshing...';
+        refreshBtn.disabled = true;
+        
+        setTimeout(() => {
+          refreshBtn.textContent = originalText;
+          refreshBtn.disabled = false;
+        }, 1000);
+      }
+      
+      fetch(`/scoretrackingP/api/scores/${sessionId}`)
+        .then(response => {
+          if (!response.ok) throw new Error('Network response was not ok');
+          return response.json();
+        })
+        .then(data => {
+          if (data && data.players) {
+            updateScoreboard(data.players);
+            showNotification('Scores refreshed manually! (Session-specific correct answers)', 'success');
+            
+            // Update header info
+            const playersCountElement = document.querySelector('.session-detail');
+            if (playersCountElement) {
+              playersCountElement.textContent = `Players in Session: ${data.players.length}`;
+            }
+          }
+        })
+        .catch(error => {
+          console.error('Error refreshing scores:', error);
+          showNotification('Failed to refresh scores.', 'error');
+        });
+    }
+    
+    // Go to leaderboard function
+    function goToLeaderboard() {
+      window.location.href = '/leaderboard';
+    }
+    
+    // Back to waiting room function
+    function backToWaiting() {
+      window.location.href = `/waitingroomP?session_id=${sessionId}`;
+    }
+    
+    // Update game status function
+    function updateGameStatus(status) {
+      document.getElementById('game-status').textContent = status;
+    }
+    
+    // Show notification function
+    function showNotification(message, type = 'success') {
+      const notification = document.getElementById('score-notification');
+      const text = notification.querySelector('.notification-text');
+      
+      text.textContent = message;
+      notification.className = `notification ${type}`;
+      notification.style.display = 'block';
+      
+      setTimeout(() => {
+        notification.style.display = 'none';
+      }, 5000);
+    }
+    
+    // Close notification function
+    function closeNotification() {
+      document.getElementById('score-notification').style.display = 'none';
+    }
+    
+    // Show winner announcement function
+    function showWinnerAnnouncement(winnerName, winnerScore, allPlayers) {
+      // Create winner announcement modal
+      const winnerModal = document.createElement('div');
+      winnerModal.id = 'winner-modal';
+      winnerModal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+        animation: fadeIn 0.5s ease;
+      `;
+      
+      // Create modal content
+      const modalContent = document.createElement('div');
+      modalContent.style.cssText = `
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 40px;
+        border-radius: 20px;
+        text-align: center;
+        color: white;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        max-width: 500px;
+        width: 90%;
+        animation: slideUp 0.5s ease;
+      `;
+      
+      // Get top 3 players for podium
+      const topThree = allPlayers.slice(0, 3);
+      let podiumHTML = '';
+      
+      topThree.forEach((player, index) => {
+        const medals = ['🥇', '🥈', '🥉'];
+        const positions = ['1st', '2nd', '3rd'];
+        podiumHTML += `
+          <div style="margin: 10px 0; padding: 10px; background: rgba(255,255,255,0.2); border-radius: 10px;">
+            <span style="font-size: 24px;">${medals[index]}</span>
+            <strong>${player.user_name}</strong> - ${player.current_score || 0} points (${positions[index]} Place)
+          </div>
+        `;
+      });
+      
+      modalContent.innerHTML = `
+        <h1 style="margin: 0 0 20px 0; font-size: 2.5em;">🎉 GAME COMPLETE! 🎉</h1>
+        <div style="font-size: 1.8em; margin: 20px 0;">
+          <div style="background: rgba(255,215,0,0.3); padding: 15px; border-radius: 15px; margin: 20px 0;">
+            <h2 style="margin: 0; color: #FFD700;">👑 WINNER 👑</h2>
+            <div style="font-size: 1.2em; margin: 10px 0;">
+              <strong>${winnerName}</strong>
+            </div>
+            <div style="font-size: 1em; color: #FFE55C;">
+              Final Score: <strong>${winnerScore} points</strong>
+            </div>
+          </div>
+        </div>
+        
+        <div style="margin: 30px 0;">
+          <h3 style="margin: 0 0 15px 0; color: #FFE55C;">🏆 Final Rankings 🏆</h3>
+          ${podiumHTML}
+        </div>
+        
+        <div style="margin: 30px 0;">
+          <button id="close-winner-modal" style="
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+          " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            🎯 Continue to Final Leaderboard
+          </button>
+        </div>
+      `;
+      
+      // Add CSS animations
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes slideUp {
+          from { transform: translateY(50px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+      `;
+      document.head.appendChild(style);
+      
+      winnerModal.appendChild(modalContent);
+      document.body.appendChild(winnerModal);
+      
+      // Add event listener to close modal and show leaderboard button
+      document.getElementById('close-winner-modal').addEventListener('click', function() {
+        winnerModal.remove();
+        showFinalLeaderboardButton();
+      });
+      
+      // Also close modal when clicking outside
+      winnerModal.addEventListener('click', function(e) {
+        if (e.target === winnerModal) {
+          winnerModal.remove();
+          showFinalLeaderboardButton();
+        }
+      });
+      
+      // Play celebration sound effect (if available)
+      console.log('🎉 Game completed! Winner:', winnerName, 'with', winnerScore, 'points');
+    }
+    
+    // Show final leaderboard button function
+    function showFinalLeaderboardButton() {
+      const leaderboardBtn = document.querySelector('.btn-leaderboard');
+      if (leaderboardBtn) {
+        // Make the button more prominent
+        leaderboardBtn.style.cssText = `
+          background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%) !important;
+          color: #000 !important;
+          font-weight: bold !important;
+          font-size: 1.2em !important;
+          padding: 15px 25px !important;
+          border-radius: 25px !important;
+          box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4) !important;
+          animation: pulse-gold 2s infinite !important;
+          border: 3px solid #FFD700 !important;
+        `;
+        
+        // Add pulsing animation for the golden button
+        const pulseStyle = document.createElement('style');
+        pulseStyle.textContent = `
+          @keyframes pulse-gold {
+            0% { transform: scale(1); box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4); }
+            50% { transform: scale(1.05); box-shadow: 0 8px 25px rgba(255, 215, 0, 0.6); }
+            100% { transform: scale(1); box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4); }
+          }
+        `;
+        document.head.appendChild(pulseStyle);
+        
+        // Update button text
+        leaderboardBtn.innerHTML = '🏆 VIEW FINAL LEADERBOARD 🏆';
+        
+        // Scroll to the button to make it visible
+        leaderboardBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        // Show a notification
+        showNotification('🎉 Game completed! Click the golden button to view final leaderboard!', 'success');
+      }
+    }
+    
+    // Auto-refresh scores every 3 seconds for real-time updates
+    let autoRefreshInterval = setInterval(() => {
+      refreshScores();
+    }, 3000);
+    
+    // Enhanced live refresh with multiple methods
+    function startLiveRefresh() {
+      // Method 1: Regular interval refresh every 3 seconds
+      if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+      autoRefreshInterval = setInterval(() => {
+        refreshScores();
+      }, 3000);
+      
+      // Method 2: Socket-based real-time updates
+      socket.on('playerUpdate', (data) => {
+        if (data.sessionId === sessionId) {
+          updateScoreboard(data.players);
+          console.log('Live update received via socket');
+        }
+      });
+      
+      // Method 3: Visibility change refresh (when user returns to tab)
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) {
+          setTimeout(() => refreshScores(), 500);
+        }
+      });
+      
+      // Method 4: Focus event refresh
+      window.addEventListener('focus', () => {
+        setTimeout(() => refreshScores(), 200);
+      });
+    }
+    
+    // Enhanced refresh function with better error handling for session-specific questionattempts scoring
+    function refreshScores() {
+      fetch(`/scoretrackingP/api/scores/${sessionId}`)
+        .then(response => {
+          if (!response.ok) throw new Error('Network response was not ok');
+          return response.json();
+        })
+        .then(data => {
+          if (data && data.players) {
+            updateScoreboard(data.players);
+            console.log('✅ Live session-specific scores refreshed automatically (from questionattempts table)');
+            
+            // Update header info as well
+            const playersCountElement = document.querySelector('.session-detail');
+            if (playersCountElement) {
+              playersCountElement.textContent = `Players in Session: ${data.players.length}`;
+            }
+          }
+        })
+        .catch(error => {
+          console.error('Auto-refresh error:', error);
+          // Don't show error notifications for auto-refresh to avoid spam
+        });
+    }
+    
+    // Start live refresh system
+    startLiveRefresh();
+    
+    
+    
+    // Check game status periodically
+    let statusCheckInterval = setInterval(() => {
+      fetch(`/scoretrackingP/api/scores/${sessionId}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data && data.players) {
+            // Check if all players have game_started = 2 (finished)
+            const allPlayersFinished = data.players.every(player => player.game_started === 2);
+            
+            if (allPlayersFinished && data.players.length > 0) {
+              updateGameStatus('🏁 Game Finished');
+              clearInterval(autoRefreshInterval);
+              clearInterval(statusCheckInterval);
+              clearInterval(timerInterval);
+              
+              // Set game completed flag to stop page refreshes
+              window.gameCompleted = true;
+              
+              // Find the winner (highest score)
+              const sortedPlayers = data.players.sort((a, b) => {
+                const scoreA = a.current_score || 0;
+                const scoreB = b.current_score || 0;
+                return scoreB - scoreA;
+              });
+              
+              const winner = sortedPlayers[0];
+              const winnerScore = winner.current_score || 0;
+              
+              // Show winner announcement in a modal/popup window
+              showWinnerAnnouncement(winner.user_name, winnerScore, sortedPlayers);
+              
+              // Show the final leaderboard button
+              showFinalLeaderboardButton();
+            }
+          }
+        })
+        .catch(error => {
+          console.error('Error checking game status:', error);
+        });
+    }, 3000);
+    
+    // Initialize timer and scoreboard
+    document.addEventListener('DOMContentLoaded', () => {
+      updateScoreboard(initialPlayers);
+    });
+
+  // Smart auto-refresh with game state detection
+  script.
+    let gameCompleted = false;
+    
+    // Smart refresh function with game_started detection
+    function smartPageRefresh() {
+      // First, check the game_started status via API
+      fetch(`/scoretrackingP/api/scores/${sessionId}`)
+        .then(response => {
+          if (!response.ok) throw new Error('Network response was not ok');
+          return response.json();
+        })
+        .then(data => {
+          if (data && data.players && data.players.length > 0) {
+            // Get the current user's game_started status
+            const currentUserPlayer = data.players.find(player => player.user_id === currentUserId);
+            
+            if (currentUserPlayer) {
+              const gameStartedStatus = currentUserPlayer.game_started;
+              
+              console.log(`Game state detection: game_started = ${gameStartedStatus}`);
+              
+              // Handle different game states
+              switch(gameStartedStatus) {
+                case 0: // Game not started / waiting
+                  console.log('Game state 0: Game not started - redirecting to homeP with error');
+                  showNotification('❌ Game session has not started or has been reset!', 'error');
+                  setTimeout(() => {
+                    window.location.href = '/homeP';
+                  }, 2000);
+                  return;
+                  
+                case 1: // Game in progress
+                  console.log('Game state 1: Game in progress - staying on current page');
+                  // Check global game completed flag first
+                  if (window.gameCompleted || gameCompleted) {
+                    console.log('Game completed flag detected - redirecting to game results page');
+                    window.location.href = `/gameresult?session_id=${sessionId}`;
+                    return;
+                  }
+                  
+                  // Check if winner modal exists (game completed)
+                  if (document.getElementById('winner-modal')) {
+                    gameCompleted = true;
+                    window.gameCompleted = true;
+                    console.log('Winner modal detected - redirecting to game results page');
+                    setTimeout(() => {
+                      window.location.href = `/gameresult?session_id=${sessionId}`;
+                    }, 2000);
+                    return;
+                  }
+                  
+                  // Check if final leaderboard button is golden (game completed)
+                  const leaderboardBtn = document.querySelector('.btn-leaderboard');
+                  if (leaderboardBtn && leaderboardBtn.innerHTML.includes('VIEW FINAL LEADERBOARD')) {
+                    gameCompleted = true;
+                    window.gameCompleted = true;
+                    console.log('Final leaderboard button detected - redirecting to game results page');
+                    setTimeout(() => {
+                      window.location.href = `/gameresult?session_id=${sessionId}`;
+                    }, 2000);
+                    return;
+                  }
+                  
+                  // Game is in progress - refresh the page normally
+                  console.log('Game in progress - refreshing page for leaderboard updates');
+                  window.location.reload();
+                  break;
+                  
+                case 2: // Game finished
+                  console.log('Game state 2: Game finished - preparing to redirect to endgamesession page');
+                  gameCompleted = true;
+                  window.gameCompleted = true;
+                  
+                  // Create and show popup modal
+                  const gameEndModal = document.createElement('div');
+                  gameEndModal.id = 'game-end-modal';
+                  gameEndModal.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.8);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    z-index: 10000;
+                    animation: fadeIn 0.5s ease;
+                  `;
+                  
+                  const modalContent = document.createElement('div');
+                  modalContent.style.cssText = `
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    padding: 40px;
+                    border-radius: 20px;
+                    text-align: center;
+                    color: white;
+                    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+                    max-width: 500px;
+                    width: 90%;
+                    animation: slideUp 0.5s ease;
+                  `;
+                  
+                  modalContent.innerHTML = `
+                    <h1 style="margin: 0 0 20px 0; font-size: 2.5em;">🏁 GAME ENDED</h1>
+                    <div style="font-size: 1.5em; margin: 20px 0; color: #FFE55C;">
+                      🧮 Calculating the result...
+                    </div>
+                    <div style="margin: 20px 0;">
+                      <div style="width: 100%; height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px; overflow: hidden;">
+                        <div id="progress-bar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #FFD700, #FFA500); border-radius: 2px; transition: width 0.1s ease;"></div>
+                      </div>
+                    </div>
+                    <p style="font-size: 1em; color: #E0E0E0; margin: 10px 0;">
+                      Please wait while we process the final scores...
+                    </p>
+                  `;
+                  
+                  // Add CSS animations
+                  const style = document.createElement('style');
+                  style.textContent = `
+                    @keyframes fadeIn {
+                      from { opacity: 0; }
+                      to { opacity: 1; }
+                    }
+                    @keyframes slideUp {
+                      from { transform: translateY(50px); opacity: 0; }
+                      to { transform: translateY(0); opacity: 1; }
+                    }
+                  `;
+                  document.head.appendChild(style);
+                  
+                  gameEndModal.appendChild(modalContent);
+                  document.body.appendChild(gameEndModal);
+                  
+                  // Animate progress bar
+                  const progressBar = modalContent.querySelector('#progress-bar');
+                  let progress = 0;
+                  const progressInterval = setInterval(() => {
+                    progress += 100 / 30; // 30 steps over 3 seconds
+                    progressBar.style.width = Math.min(progress, 100) + '%';
+                    if (progress >= 100) {
+                      clearInterval(progressInterval);
+                    }
+                  }, 100);
+                  
+                  // Redirect after 3 seconds
+                  setTimeout(() => {
+                    window.location.href = `/endgamesession?session_id=${sessionId}`;
+                  }, 3000);
+                  return;
+                  
+                default:
+                  console.warn(`Unknown game_started status: ${gameStartedStatus}`);
+                  // Fallback to normal refresh
+                  window.location.reload();
+              }
+            } else {
+              console.error('Current user not found in session players');
+              showNotification('❌ Player not found in session!', 'error');
+              setTimeout(() => {
+                window.location.href = '/homeP';
+              }, 2000);
+            }
+          } else {
+            console.error('No players data received');
+            showNotification('❌ No session data found!', 'error');
+            setTimeout(() => {
+              window.location.href = '/homeP';
+            }, 2000);
+          }
+        })
+        .catch(error => {
+          console.error('Error checking game state:', error);
+          // On error, fallback to normal refresh to avoid breaking the page
+          console.log('Error occurred - falling back to normal refresh');
+          window.location.reload();
+        });
+    }
+    
+    // Set up smart refresh interval
+    setInterval(smartPageRefresh, 5000);

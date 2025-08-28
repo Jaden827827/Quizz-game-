@@ -1,0 +1,388 @@
+/* Body styling with background image */
+body {
+  font-family: Arial, sans-serif;
+  background-image: url('/pic/mainpagebg.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  animation: fadeInBackground 1.5s ease-out;
+}
+
+/* Container for the session page */
+.container {
+  font-family: Arial, sans-serif;
+  width: 80%;
+  margin: 0 auto;
+  text-align: center;
+  animation: slideInFromBottom 1s ease-out 0.3s both;
+}
+
+/* Header Section */
+.header {
+  background-image: url('/pic/mainpagewood.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: white;
+  padding: 20px 0;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+  animation: slideInFromTop 0.8s ease-out 0.5s both;
+  transition: all 0.3s ease;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 2em;
+  animation: textGlow 2s ease-in-out infinite alternate;
+}
+
+/* Participants List */
+.players-list {
+  margin-top: 20px;
+  animation: fadeInScale 1s ease-out 0.8s both;
+}
+
+.players-list h2 {
+  font-size: 1.5em;
+  color: #f6f6f6;
+  margin-bottom: 10px;
+  animation: bounceInUp 0.8s ease-out 1s both;
+}
+
+.players-list ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.players-list li {
+  font-size: 1.2em;
+  padding: 5px;
+  background-color: #f4f4f4;
+  border: 1px solid #ddd;
+  margin-bottom: 5px;
+  border-radius: 4px;
+}
+
+.players-list li:nth-child(odd) {
+  background-color: #e9e9e9;
+}
+
+/* Start Game Button */
+.start-game-container {
+  margin-top: 30px;
+  animation: bounceInUp 0.8s ease-out 1.2s both;
+}
+
+.start-game-container a {
+  display: inline-block;
+  padding: 15px 30px;
+  background-color: #0a66e5;
+  color: white;
+  text-decoration: none;
+  font-size: 1.2em;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.start-game-container a::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.start-game-container a:hover {
+  background-color: #2432f5;
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(4, 56, 87, 0.4);
+}
+
+.start-game-container a:hover::before {
+  left: 100%;
+}
+
+.start-game-container p {
+  color: white;
+  font-weight: bold;
+  font-size: 1.1em;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Footer Section */
+.footer {
+  margin-top: 40px;
+}
+
+.footer a {
+  display: inline-block;
+  padding: 12px 25px;
+  background-color: #daae20;
+  color: white;
+  text-decoration: none;
+  font-size: 1em;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.footer a::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(243, 204, 31, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.footer a:hover {
+  background-color: #5a6268;
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(108, 117, 125, 0.4);
+}
+
+.footer a:hover::before {
+  left: 100%;
+}
+
+/* Session Info Section */
+.session-info {
+  margin-bottom: 30px;
+  padding: 20px;
+  background-image: url('/pic/mainpagewood.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 8px;
+  
+  animation: fadeInScale 1s ease-out 0.6s both;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.session-info p {
+  font-size: 1.2em;
+  margin-bottom: 15px;
+  color: white;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+#sessionId {
+  font-weight: bold;
+  color: #333;
+  background-color: #e8f5e8;
+  padding: 5px 10px;
+  border-radius: 4px;
+  border: 1px solid #c65417;
+}
+
+.copy-btn-container {
+  margin-top: 10px;
+}
+
+#copySessionIdBtn {
+  background-color: #4d3305;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+}
+
+#copySessionIdBtn:hover {
+  background-color: #e5661c;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+}
+
+/* QR Code Section */
+.qr-section {
+  margin: 40px ;
+  padding: 30px;
+  background-image: url('/pic/mainpagewood.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 8px;
+
+  animation: fadeInScale 1s ease-out 1s both;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.qr-section h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: rgb(255, 254, 254);
+  font-size: 1.3em;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.qr-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+  padding: 3px;
+  background-color: rgb(16, 0, 0);
+  border-radius: 8px;
+
+  animation: pulseGlow 2s ease-in-out infinite alternate;
+}
+
+#qrcode {
+  border-radius: 4px;
+}
+
+.qr-instructions {
+  margin-top: 15px;
+  font-style: italic;
+  color: white;
+  font-size: 0.9em;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Keyframe Animations */
+@keyframes fadeInBackground {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes bounceInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(100px) scale(0.8);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-10px) scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes textGlow {
+  from {
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+  }
+  to {
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 0 30px rgba(76, 175, 80, 0.5);
+  }
+}
+
+@keyframes pulseGlow {
+  from {
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+  }
+  to {
+    box-shadow: 0 0 20px rgba(250, 252, 250, 0.6), 0 0 30px rgba(76, 175, 80, 0.3);
+  }
+}
+
+/* Player list item animations */
+.players-list li {
+  font-size: 1.2em;
+  padding: 5px;
+  background-color: rgba(244, 244, 244, 0.9);
+  border: 1px solid #ddd;
+  margin-bottom: 5px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  animation: slideInFromLeft 0.5s ease-out;
+  animation-delay: calc(0.1s * var(--player-index, 0));
+}
+
+.players-list li:nth-child(odd) {
+  background-color: rgba(233, 233, 233, 0.9);
+}
+
+.players-list li:hover {
+  transform: translateX(5px);
+  background-color: rgba(232, 245, 233, 0.9);
+  border-color: #4c5eaf;
+}
+
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Footer animation */
+.footer {
+  margin-top: 40px;
+  animation: fadeInSlideUp 1s ease-out 1.4s both;
+}
+
+@keyframes fadeInSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

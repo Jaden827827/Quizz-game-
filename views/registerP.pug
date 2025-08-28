@@ -1,0 +1,48 @@
+doctype html
+html
+  head
+    title #{title}
+    script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js")
+    link(rel="stylesheet", href="/css/registerP.css")
+    body
+    button#auto-click-trigger(style="display: none;")
+    .registration-container
+      h1 Create Your Account
+      
+      if error
+        .error-message= error
+      
+      form#registerP-form(action="/registerP/register", method='post')
+        .input-group
+          label(for='name') Full Name:
+          input#name(type='text', name='name', required, placeholder="Enter your full name")
+
+        .input-group
+          label(for='email') Email Address:
+          input#email(type='email', name='email', required, placeholder="Enter your email address")
+
+        .input-group
+          label(for='password') Password:
+          input#password(type='password', name='password', required, placeholder="Enter your password (min 6 characters)")
+
+        .button-group
+          button#register-button(type='submit') Create Account
+          button(type='reset') Clear Form
+
+      .login-link
+        p Already have an account?
+          a(href="/loginjoinP") Login here
+
+      .back-link
+        a(href="/homeP") ← Back to Home
+
+    script.
+      document.getElementById('registerP-form').addEventListener('submit', function(event) {
+        var password = document.getElementById('password').value;
+        if (password.length < 6) {
+          alert('Password must be at least 6 characters long.');
+          event.preventDefault();
+        }
+      });
+    script(src='/js/registerP.js')
+    script(src="/js/bgm.js")

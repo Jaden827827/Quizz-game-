@@ -1,0 +1,81 @@
+//- home.pug
+
+
+doctype html
+html
+  head
+    title #{title}
+    link(rel="stylesheet", href="/css/home.css")
+    script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js")  // Using Google CDN
+    //- Chest button hover effects
+    style.
+      #start-btn {
+        background: url('/pic/chestclose.png') no-repeat center center;
+        background-size: contain;
+        background-color: transparent; /* Remove any background color */
+        border: none;
+        width: 150px;
+        height: 120px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        outline: none;
+        text-indent: -9999px; /* Hide text but keep it for accessibility */
+        overflow: hidden;
+        box-shadow: none; /* Remove any box shadow */
+        padding: 0; /* Remove any padding */
+        margin: 0; /* Remove any margin */
+      }
+      #start-btn:hover {
+        background-image: url('/pic/chestopen.png');
+        background-color: transparent; /* Keep transparent on hover */
+        transform: scale(1.1);
+      }
+      #start-btn:active {
+        transform: scale(0.95);
+        background-color: transparent; /* Keep transparent when clicked */
+      }
+      #start-btn:focus {
+        background-color: transparent; /* Keep transparent when focused */
+        outline: none;
+      }
+      
+    //- JavaScript for chest sound effect
+    script.
+      document.addEventListener('DOMContentLoaded', function() {
+        const startBtn = document.getElementById('start-btn');
+        let chestSound = null;
+        
+        // Preload the sound
+        function preloadSound() {
+          chestSound = new Audio('/music/opchestsound.mp3');
+          chestSound.preload = 'auto';
+          chestSound.volume = 0.5; // Set volume to 50%
+        }
+        
+        // Play sound on hover
+        function playChestSound() {
+          if (chestSound) {
+            chestSound.currentTime = 0; // Reset to beginning
+            chestSound.play().catch(e => console.log('Sound play failed:', e));
+          }
+        }
+        
+        // Initialize sound and add event listeners
+        preloadSound();
+        
+        if (startBtn) {
+          startBtn.addEventListener('mouseenter', playChestSound);
+        }
+      });
+  body
+    .container
+      .header
+        h1 #{title}
+
+      
+
+      .main-content
+        .press-text Press Here !!!
+        button#start-btn(onclick="window.location.href='/login';") Start
+
+    script(src="/js/home.js")  // Link to the JavaScript file that will handle button click and more

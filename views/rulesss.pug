@@ -1,0 +1,509 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title Python Pop-Out Challenge - Rules
+    style.
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-image: url('/pic/mainpagebg.png');
+        min-height: 100vh;
+        color: white;
+        overflow-x: hidden;
+      }
+
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px;
+        animation: fadeIn 1s ease-in;
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 40px;
+        animation: bounceIn 1.5s ease-out;
+      }
+
+      @keyframes bounceIn {
+        0% { transform: scale(0.3) rotate(-10deg); opacity: 0; }
+        50% { transform: scale(1.05) rotate(5deg); }
+        70% { transform: scale(0.9) rotate(-2deg); }
+        100% { transform: scale(1) rotate(0deg); opacity: 1; }
+      }
+
+      h3 {
+        font-size: 2.8rem;
+        margin-bottom: 10px;
+        font-weight: bold;
+        background: linear-gradient(45deg, #1f16cbff, #1fb3e0ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      }
+
+      .rules-section {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 30px;
+        margin: 20px 0;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        opacity: 0;
+        transform: translateX(-100px);
+      }
+
+      .rules-section:nth-child(even) {
+        transform: translateX(100px);
+      }
+
+      .rules-section.visible {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      .rules-section.hidden {
+        opacity: 0;
+      }
+
+      .rules-section.hidden:nth-child(odd) {
+        transform: translateX(-100px);
+      }
+
+      .rules-section.hidden:nth-child(even) {
+        transform: translateX(100px);
+      }
+
+      .rules-section:hover {
+        transform: translateX(0) translateY(-5px) scale(1.02);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      }
+
+      @keyframes slideInUp {
+        from {
+          opacity: 0;
+          transform: translateY(50px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .rule-item {
+        margin: 15px 0;
+        padding: 15px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.05);
+        transition: all 0.3s ease;
+        animation: fadeInLeft 0.6s ease-out;
+        animation-fill-mode: both;
+      }
+
+      .rule-item:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateX(10px);
+      }
+
+      @keyframes fadeInLeft {
+        from {
+          opacity: 0;
+          transform: translateX(-30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      .rule-title {
+        font-size: 1.3rem;
+        font-weight: bold;
+        margin-bottom: 8px;
+        color: #FFD700;
+        display: flex;
+        align-items: center;
+      }
+
+      .rule-content {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        margin-left: 20px;
+      }
+
+      .player-keys {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin: 20px 0;
+      }
+
+      .key-item {
+        background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+        padding: 15px;
+        border-radius: 10px;
+        text-align: center;
+        font-weight: bold;
+        animation: pulse 2s infinite;
+        transition: transform 0.3s ease;
+      }
+
+      .key-item:hover {
+        transform: scale(1.05);
+        animation-play-state: paused;
+      }
+
+      @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7); }
+        70% { box-shadow: 0 0 0 10px rgba(255, 107, 107, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0); }
+      }
+
+      .icon {
+        font-size: 1.5rem;
+        margin-right: 10px;
+        animation: rotate 3s linear infinite;
+      }
+
+      @keyframes rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+
+      .highlight {
+        background: linear-gradient(45deg, #ff9a9e, #fecfef);
+        color: #333;
+        padding: 2px 8px;
+        border-radius: 5px;
+        font-weight: bold;
+      }
+
+      .bonus-section {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        border: 2px solid #FFD700;
+        animation: glow 2s ease-in-out infinite alternate;
+      }
+
+      @keyframes glow {
+        from { box-shadow: 0 0 20px rgba(255, 215, 0, 0.3); }
+        to { box-shadow: 0 0 30px rgba(255, 215, 0, 0.6); }
+      }
+
+      .floating-elements {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: -1;
+      }
+
+      .floating-element {
+        position: absolute;
+        font-size: 2rem;
+        color: rgba(255, 255, 255, 0.1);
+        animation: float 6s ease-in-out infinite;
+      }
+
+      @keyframes float {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-20px) rotate(180deg); }
+      }
+
+      .back-button {
+        display: inline-block;
+        background: linear-gradient(45deg, #28a745, #20c997);
+        color: white;
+        padding: 12px 25px;
+        border-radius: 25px;
+        text-decoration: none;
+        font-weight: bold;
+        margin: 20px 0;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      }
+
+      .back-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+      }
+
+      /* Remove static animation delays since we're using scroll triggers */
+
+      .rule-item:nth-child(1) { animation-delay: 0.1s; }
+      .rule-item:nth-child(2) { animation-delay: 0.2s; }
+      .rule-item:nth-child(3) { animation-delay: 0.3s; }
+      .rule-item:nth-child(4) { animation-delay: 0.4s; }
+      .rule-item:nth-child(5) { animation-delay: 0.5s; }
+
+  body
+    .floating-elements
+      .floating-element(style="top: 10%; left: 10%;") 🐍
+      .floating-element(style="top: 20%; right: 15%;") ⚔️
+      .floating-element(style="bottom: 30%; left: 20%;") 🏴‍☠️
+      .floating-element(style="bottom: 20%; right: 10%;") 💎
+
+    .container
+      .header
+        h3 🐍 Welcome to Python Pop-Out Challenge! 🏴‍☠️
+
+      .rules-section
+        .rule-item
+          .rule-title
+            span.icon 🎯
+            | Objective
+          .rule-content
+            | Answer Python programming questions as quickly as possible!
+
+      .rules-section
+        .rule-item
+          .rule-title
+            span.icon 🔔
+            | Buzz to Answer
+          .rule-content
+            | The first player to press the buzzer gets the chance to answer the question.
+        
+        .player-keys
+          .key-item
+            | Player 1: Press 
+            span.highlight "W"
+          .key-item
+            | Player 2: Press 
+            span.highlight "P"
+          .key-item
+            | Player 3: Press 
+            span.highlight "Z"
+          .key-item
+            | Player 4: Press 
+            span.highlight "M"
+
+      .rules-section
+        .rule-item
+          .rule-title
+            span.icon ❓
+            | Answer the Question
+          .rule-content
+            | Once you buzz in, choose the correct answer from the options A, B, C, or D.
+
+      .rules-section
+        .rule-item
+          .rule-title
+            span.icon ⚡
+            | Get Instant Feedback
+          .rule-content
+            | After answering, you'll see if your answer was correct or incorrect.
+
+        .rule-item
+          .rule-title
+            span.icon ✅
+            | If Correct
+          .rule-content
+            | You earn points and penalize your opponent by allowing you to stab a sword into their pirate barrel.
+
+        .rule-item
+          .rule-title
+            span.icon ❌
+            | If Incorrect
+          .rule-content
+            | You lose the chance to earn points, and your opponent will get to penalize you by stabbing a sword into your pirate barrel.
+
+      .rules-section.bonus-section
+        .rule-item
+          .rule-title
+            span.icon ⭐
+            | Bonus Ability
+          .rule-content
+            | Every 3 questions answered, you can buzz in for a special ability.
+            br
+            | This ability allows you to skip the current question or force an opponent to answer it.
+            br
+            | Press your key to buzz for the ability: 
+            span.highlight W, P, Z, M
+            br
+            | The first player to buzz in gets the ability.
+
+      .rules-section
+        .rule-item
+          .rule-title
+            span.icon 🏁
+            | Game End Options
+          .rule-content
+            | The game ends when someone's pirate barrel pops out, press 
+            span.highlight "STOP"
+            |  button and your total score will be displayed.
+            br
+            br
+            | Alternatively, the game can end early if any player's pirate barrel pops. This means that player loses the game, and the game ends before all questions have been answered.
+
+      a.back-button(href="#" onclick="history.back()") 🔙 Back to Game
+
+    script(src="/js/bgm.js")
+    script.
+      // Enhanced scroll-triggered fly-in animations
+      document.addEventListener('DOMContentLoaded', function() {
+        
+        function handleScrollAnimations() {
+          const sections = document.querySelectorAll('.rules-section');
+          const windowHeight = window.innerHeight;
+          const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+          
+          sections.forEach((section, index) => {
+            const rect = section.getBoundingClientRect();
+            const sectionTop = rect.top + scrollTop;
+            const sectionBottom = sectionTop + section.offsetHeight;
+            const triggerPoint = windowHeight * 0.75;
+            
+            // Check if section is in viewport when scrolling down
+            const isInViewport = (scrollTop + triggerPoint > sectionTop) && 
+                               (scrollTop < sectionBottom + 200);
+            
+            if (isInViewport) {
+              // Fly in when scrolling down
+              section.classList.add('visible');
+              section.classList.remove('hidden');
+            } else {
+              // Fade away when scrolling up or out of view
+              section.classList.remove('visible');
+              section.classList.add('hidden');
+            }
+          });
+        }
+        
+        // Initialize on page load
+        setTimeout(handleScrollAnimations, 100);
+        
+        // Throttled scroll handler for smooth performance
+        let isScrolling = false;
+        window.addEventListener('scroll', () => {
+          if (!isScrolling) {
+            window.requestAnimationFrame(() => {
+              handleScrollAnimations();
+              isScrolling = false;
+            });
+            isScrolling = true;
+          }
+        }, { passive: true });
+        
+        // Enhanced key item click animations
+        document.querySelectorAll('.key-item').forEach(item => {
+          item.addEventListener('click', function() {
+            // Create ripple effect
+            const ripple = document.createElement('div');
+            ripple.style.cssText = `
+              position: absolute;
+              border-radius: 50%;
+              background: rgba(255, 255, 255, 0.6);
+              transform: scale(0);
+              animation: ripple 0.6s linear;
+              pointer-events: none;
+              left: 50%;
+              top: 50%;
+              width: 20px;
+              height: 20px;
+              margin: -10px 0 0 -10px;
+            `;
+            
+            this.style.position = 'relative';
+            this.appendChild(ripple);
+            
+            // Click animation
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+              this.style.transform = 'scale(1.05)';
+              setTimeout(() => {
+                this.style.transform = 'scale(1)';
+                ripple.remove();
+              }, 150);
+            }, 100);
+          });
+        });
+        
+        // Enhanced floating elements
+        function createFloatingElement() {
+          const symbols = ['🐍', '⚔️', '🏴‍☠️', '💎', '⭐', '🔥', '💻', '🎮'];
+          const element = document.createElement('div');
+          element.className = 'floating-element';
+          element.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+          
+          // Random starting position and movement
+          const startSide = Math.random() > 0.5 ? 'left' : 'right';
+          element.style.cssText = `
+            position: absolute;
+            font-size: ${1.5 + Math.random() * 1}rem;
+            color: rgba(255, 255, 255, ${0.1 + Math.random() * 0.2});
+            ${startSide}: ${startSide === 'left' ? '-50px' : 'calc(100% + 50px)'};
+            top: ${Math.random() * 100}%;
+            animation: floatAcross ${8 + Math.random() * 4}s linear;
+            pointer-events: none;
+            z-index: -1;
+          `;
+          
+          document.querySelector('.floating-elements').appendChild(element);
+          
+          setTimeout(() => {
+            if (element.parentNode) {
+              element.remove();
+            }
+          }, 12000);
+        }
+        
+        // Create floating elements periodically
+        setInterval(createFloatingElement, 3000);
+        
+        // Add scroll progress indicator
+        const progressBar = document.createElement('div');
+        progressBar.style.cssText = `
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 0%;
+          height: 3px;
+          background: linear-gradient(90deg, #FFD700, #FFA500);
+          z-index: 1000;
+          transition: width 0.1s ease;
+        `;
+        document.body.appendChild(progressBar);
+        
+        window.addEventListener('scroll', () => {
+          const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+          const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+          const scrolled = (winScroll / height) * 100;
+          progressBar.style.width = scrolled + '%';
+        }, { passive: true });
+        
+      });
+      
+      // Add dynamic CSS animations
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes ripple {
+          to {
+            transform: scale(4);
+            opacity: 0;
+          }
+        }
+        
+        @keyframes floatAcross {
+          from {
+            transform: translateX(0) translateY(0) rotate(0deg);
+          }
+          to {
+            transform: translateX(${Math.random() > 0.5 ? '' : '-'}200px) translateY(-30px) rotate(360deg);
+          }
+        }
+      `;
+      document.head.appendChild(style);

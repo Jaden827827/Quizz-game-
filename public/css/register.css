@@ -1,0 +1,338 @@
+/* Register Page Styling with Home Background and Scroll Window */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Showcard Gothic', sans-serif;
+  margin: 0;
+  padding: 0;
+  /* Use the same background as home page */
+  background-image: url('/pic/home background.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #53b9de;
+    overflow: hidden; 
+}
+
+/* Container for the scroll window with animation */
+.registration-container {
+  width: min(900px, 95vw);
+  max-width: 900px;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeInSlideUp 1s ease-out;
+}
+
+/* Scroll window background using scroll.png */
+.scroll-window {
+  background-image: url('/pic/scroll.png');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 100%;
+  min-height: clamp(900px, 95vh, 1200px);
+  padding: clamp(180px, 22vw, 250px) clamp(100px, 18vw, 200px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  animation: scrollUnroll 1.2s ease-out;
+}
+
+/* Title styling with animation */
+h1 {
+  text-align: center;
+  margin-bottom: clamp(50px, 4vw, 40px);
+  color: #f4e244;
+  font-size: clamp(1.5rem, 4vw, 2.2rem);
+  font-weight: bold;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  animation: titleGlow 2s ease-in-out infinite alternate;
+}
+
+/* Error message styling with animation */
+.error-message {
+  color: #DC143C;
+  text-align: center;
+  margin-bottom: 20px;
+  font-weight: bold;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 10px;
+  border-radius: 5px;
+  border: 2px solid #DC143C;
+  animation: errorShake 0.5s ease-in-out;
+}
+
+/* Form group spacing */
+.form-group {
+  margin-bottom: clamp(20px, 3vw, 28px);
+}
+
+/* Form label styling */
+label {
+  display: block;
+  margin-bottom: clamp(6px, 1vw, 8px);
+  font-weight: bold;
+  color: #df9954;
+  font-size: clamp(1rem, 2.5vw, 1.2rem);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Input field styling with enhanced effects */
+#register-form input[type="text"],
+#register-form input[type="email"],
+#register-form input[type="password"],
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  width: 100%;
+  padding: clamp(14px, 2.2vw, 18px) clamp(16px, 2.8vw, 20px);
+  margin-bottom: clamp(16px, 2.2vw, 20px);
+  border: 2px solid #653505;
+  border-radius: 8px;
+  font-size: clamp(1rem, 2.5vw, 1.2rem);
+  background-color: rgba(255, 255, 255, 0.95);
+  transition: all 0.3s ease;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#register-form input[type="text"]:focus,
+#register-form input[type="email"]:focus,
+#register-form input[type="password"]:focus,
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus {
+  outline: none;
+  border-color: #CD853F;
+  background-color: rgba(255, 255, 255, 1);
+  box-shadow: 0 0 10px rgba(175, 116, 57, 0.5);
+  transform: scale(1.02);
+}
+
+/* Button group styling */
+.button-group {
+  margin-top: clamp(18px, 2.5vw, 22px);
+  margin-bottom: clamp(18px, 2.5vw, 22px);
+}
+
+/* Enhanced register button styling */
+#register-button,
+.register-btn {
+  width: 100%;
+  padding: clamp(16px, 3vw, 22px);
+  background: linear-gradient(135deg, #8B4513, #CD853F);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: clamp(1.2rem, 3.2vw, 1.5rem);
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  margin-bottom: 12px;
+}
+
+#register-button:hover,
+.register-btn:hover {
+  background: linear-gradient(135deg, #CD853F, #8B4513);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+#register-button:active,
+.register-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Enhanced reset button styling */
+#register-form button[type="reset"],
+.reset-btn {
+  width: 100%;
+  padding: clamp(16px, 3vw, 22px);
+  background: linear-gradient(135deg, #6c757d, #5a6268);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: clamp(1.2rem, 3.2vw, 1.5rem);
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+#register-form button[type="reset"]:hover,
+.reset-btn:hover {
+  background: linear-gradient(135deg, #5a6268, #6c757d);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+#register-form button[type="reset"]:active,
+.reset-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Enhanced paragraph and link styling */
+p,
+.login-link {
+  text-align: center;
+  margin-top: clamp(20px, 3vw, 28px);
+  color: #654321;
+  font-weight: bold;
+  font-size: clamp(1rem, 2.5vw, 1.2rem);
+}
+
+.login-link a,
+p a {
+  color: #e4db53;
+  text-decoration: none;
+  font-weight: bold;
+  margin-left: 5px;
+  transition: all 0.3s ease;
+}
+
+.login-link a:hover,
+p a:hover {
+  color: #f1ede8;
+  text-decoration: underline;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Email error specific styling */
+#email-error {
+  margin-top: 10px;
+}
+
+/* Keyframe animations */
+@keyframes fadeInSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scrollUnroll {
+  from {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+  to {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+@keyframes titleGlow {
+  from {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  }
+  to {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3), 0 0 15px rgba(139, 69, 19, 0.5);
+  }
+}
+
+@keyframes errorShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+/* Responsive design with better breakpoints */
+@media (max-width: 1200px) {
+  .registration-container {
+    width: min(800px, 90vw);
+  }
+}
+
+@media (max-width: 1024px) {
+  .registration-container {
+    width: min(750px, 92vw);
+  }
+  
+  .scroll-window {
+    min-height: clamp(850px, 85vh, 1000px);
+    padding: clamp(160px, 20vw, 200px) clamp(90px, 16vw, 150px);
+  }
+}
+
+@media (max-width: 768px) {
+  .registration-container {
+    width: min(650px, 95vw);
+    margin: 10px;
+  }
+  
+  .scroll-window {
+    min-height: clamp(750px, 80vh, 900px);
+    padding: clamp(120px, 18vw, 180px) clamp(70px, 14vw, 120px);
+  }
+}
+
+@media (max-width: 480px) {
+  .registration-container {
+    width: min(500px, 98vw);
+    margin: 5px;
+  }
+  
+  .scroll-window {
+    min-height: clamp(650px, 75vh, 800px);
+    padding: clamp(100px, 15vw, 150px) clamp(50px, 12vw, 100px);
+  }
+}
+
+@media (max-width: 320px) {
+  .registration-container {
+    width: 99vw;
+    margin: 0;
+  }
+  
+  .scroll-window {
+    min-height: clamp(600px, 70vh, 750px);
+    padding: clamp(80px, 12vw, 120px) clamp(40px, 10vw, 80px);
+  }
+}
+
+/* Landscape orientation adjustments */
+@media (orientation: landscape) and (max-height: 600px) {
+  .scroll-window {
+    min-height: 95vh;
+    padding: clamp(20px, 3vh, 40px) clamp(40px, 8vw, 80px);
+  }
+  
+  h1 {
+    font-size: clamp(1.2rem, 3vh, 1.8rem);
+    margin-bottom: clamp(10px, 2vh, 20px);
+  }
+  
+  .form-group {
+    margin-bottom: clamp(10px, 2vh, 20px);
+  }
+  
+  input[type="text"],
+  input[type="email"],
+  input[type="password"] {
+    padding: clamp(8px, 1.5vh, 12px) clamp(12px, 2vh, 15px);
+    margin-bottom: clamp(8px, 1.5vh, 15px);
+  }
+  
+  .register-btn,
+  .reset-btn {
+    padding: clamp(10px, 2vh, 15px);
+    font-size: clamp(1rem, 2.5vh, 1.2rem);
+  }
+}

@@ -1,0 +1,39 @@
+doctype html
+html
+  head
+    title Main Page
+    link(rel="stylesheet", href="/css/mainpage.css")
+  body
+    // Auto-click trigger for BGM
+    button#auto-click-trigger(style="display: none;")
+    
+    .container
+      .header
+        .welcome
+          h1 Welcome Captain, #{user_name}!
+
+      .content
+        .column
+          .btn-container
+            a.btn(href="/session") New Session
+          .btn-container
+            a.btn(href="/joingame") Join Game
+        .column
+          .btn-container
+            a.btn(href="/leaderboard") Leaderboard
+          .btn-container
+            a.btn#logout-btn(href="#") Log Out
+
+            .column
+          .btn-container
+            a.btn(href="/rulesss") Rules
+
+    script.
+      document.getElementById('logout-btn').addEventListener('click', function(event) {
+        event.preventDefault();
+        if (confirm('Are you sure you want to log out?')) {
+          window.location.href = '/logout';
+        }
+      });
+    script(src="/js/mainpage.js")
+    script(src="/js/bgm.js")

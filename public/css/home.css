@@ -1,0 +1,194 @@
+/* /public/css/home.css - Complete Styling */
+body {
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f4;
+  background-image: url('/pic/home background.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  min-height: 100vh;
+  color: #333;
+}
+
+/* Container Layout */
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Main Content Center Alignment */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 2rem;
+}
+
+/* Hidden Header (Accessibility Friendly) */
+.header {
+  position: absolute;
+  clip: rect(1px, 1px, 1px, 1px);
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+}
+
+/* Footer Styling with Hidden Links */
+footer {
+  text-align: center;
+  padding: 1.5rem;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+}
+
+footer ul {
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Hide specific navigation links */
+footer ul li:nth-child(1),
+footer ul li:nth-child(2),
+footer ul li:nth-child(3) {
+  display: none;
+}
+
+/* Visible Links Styling */
+footer ul li {
+  margin: 0 1.5rem;
+}
+
+footer ul li a {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+  font-size: 1.1rem;
+  padding: 0.5rem;
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  display: inline-block;
+}
+
+/* Link Hover Effects */
+footer ul li a:hover {
+  color: #4CAF50;
+  transform: translateY(-0.25rem) scale(1.05);
+  text-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
+}
+
+/* Primary Button Styling - Chest Image */
+.press-text {
+  font-family: "Showcard Gothic", "Arial Black", sans-serif;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #FFD700;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  margin-bottom: 0.5rem;
+  animation: float 2s ease-in-out infinite;
+  text-align: center;
+}
+
+button#start-btn {
+  background: url('/pic/chestclose.png') no-repeat center center;
+  background-size: contain;
+  background-color: transparent !important;
+  color: transparent;
+  padding: 0;
+  font-size: 0;
+  border: none;
+  cursor: pointer;
+  border-radius: 0;
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: none;
+  margin: 1.5rem 0;
+  width: 200px;
+  height: 160px;
+  text-indent: -9999px;
+}
+
+/* Button Hover State */
+button#start-btn:hover {
+  background-image: url('/pic/chestopen.png');
+  background-color: transparent !important;
+  transform: translateY(-3px) scale(1.1);
+  box-shadow: none;
+}
+
+/* Button Active State */
+button#start-btn:active {
+  transform: translateY(1px) scale(0.95);
+  box-shadow: none;
+  background-color: transparent !important;
+}
+
+/* Removed ripple effect for chest button */
+
+@keyframes ripple {
+  0% {
+    transform: scale(0, 0);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(20, 20);
+    opacity: 0;
+  }
+}
+
+/* Floating Animation for Pirate Text */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.pirate-text {
+  animation: float 3s ease-in-out infinite;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  margin-bottom: 1rem;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  footer ul {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  footer ul li {
+    margin: 0.25rem 0;
+  }
+  
+  button#start-btn {
+    width: 180px;
+    height: 144px;
+  }
+}
+
+/* Loading Animation (Optional) */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-spinner {
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top: 4px solid #4CAF50;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}

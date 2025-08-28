@@ -1,0 +1,66 @@
+block content
+  link(rel='stylesheet', href='/css/user-management.css')
+
+  //- Star, Planet, and Shooting Star Background
+  .stars
+    - for(var i=0;i<60;i++)
+      .star(style=`top:${Math.random()*100}vh;left:${Math.random()*100}vw;`)
+  .shooting-star
+  .shooting-star.shooting-star2
+  .shooting-star.shooting-star3
+  .planet
+
+  .bg-overlay
+    .container.mt-5
+      h1.text-white User Management
+      a.btn.btn-secondary(href='/admin' style='width: 220px;') Back
+      if error
+        .alert.alert-danger= error
+      h3.mt-4.mb-3.text-white User List
+      .table-responsive
+        table.table.table-striped.table-dark.table-hover.align-middle.shadow
+          thead
+            tr
+              th User ID
+              th Username
+              th Email
+              th.text-center Actions
+          tbody
+            if users && users.length
+              each user in users
+                tr
+                  td= user.user_id
+                  td= user.user_name
+                  td= user.user_email
+                  td.text-center
+                    button.btn.btn-danger.btn-sm.shadow-sm(
+                      onclick=`openDeleteModal(${user.user_id})`
+                    ) Delete
+            else
+              tr
+                td(colspan='4', class='text-center text-white') No users found.
+
+    #deleteModal.modal(tabindex='-1', role='dialog')
+      .modal-dialog(role='document')
+        .modal-content
+          .modal-header.bg-danger.text-white
+            h5.modal-title Confirm Deletion
+            button.close(type='button', data-dismiss='modal', aria-label='Close', onclick='closeDeleteModal()')
+              span(aria-hidden='true') &times;
+          .modal-body
+            p Are you sure you want to delete this user?
+          .modal-footer
+            button.btn.btn-secondary(type='button', data-dismiss='modal', onclick='closeDeleteModal()') Cancel
+            form(id='deleteUserForm', method='POST', action='')
+              button.btn.btn-danger(type='submit') Delete
+
+    script.
+      function openDeleteModal(userId) {
+        const form = document.getElementById('deleteUserForm');
+        form.action = `/user-management/delete/${userId}`;
+        document.getElementById('deleteModal').style.display = 'block';
+      }
+
+      function closeDeleteModal() {
+        document.getElementById('deleteModal').style.display = 'none';
+      }

@@ -1,0 +1,301 @@
+extends layout
+
+block content
+  link(rel="stylesheet", href="/css/scoretrackingP.css")
+  
+  //- Game Result Styles
+  style.
+    .gameresult-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: white;
+    }
+    .gameresult-header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 30px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+    }
+    .gameresult-title {
+      font-size: 3em;
+      margin: 0 0 20px 0;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      animation: glow 2s ease-in-out infinite alternate;
+    }
+    @keyframes glow {
+      from { text-shadow: 2px 2px 4px rgba(0,0,0,0.3), 0 0 20px rgba(255,215,0,0.5); }
+      to { text-shadow: 2px 2px 4px rgba(0,0,0,0.3), 0 0 30px rgba(255,215,0,0.8); }
+    }
+    .session-info-result {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 15px;
+      border-radius: 15px;
+      margin: 20px 0;
+      text-align: center;
+    }
+    .winner-announcement {
+      background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+      color: #000;
+      padding: 30px;
+      border-radius: 20px;
+      margin: 30px 0;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4);
+      animation: pulse-winner 3s ease-in-out infinite;
+    }
+    @keyframes pulse-winner {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+    }
+    .final-leaderboard {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 30px;
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+    }
+    .podium-display {
+      display: flex;
+      justify-content: center;
+      align-items: end;
+      margin: 30px 0;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .podium-place {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 20px;
+      border-radius: 15px;
+      text-align: center;
+      min-width: 150px;
+      backdrop-filter: blur(5px);
+    }
+    .podium-first {
+      order: 2;
+      background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+      color: #000;
+      transform: scale(1.1);
+      height: 200px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .podium-second {
+      order: 1;
+      background: linear-gradient(135deg, #C0C0C0 0%, #A8A8A8 100%);
+      color: #000;
+      height: 150px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .podium-third {
+      order: 3;
+      background: linear-gradient(135deg, #CD7F32 0%, #B8732A 100%);
+      color: #fff;
+      height: 120px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .players-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+    }
+    .player-card {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 15px;
+      backdrop-filter: blur(5px);
+      transition: transform 0.3s ease;
+    }
+    .player-card:hover {
+      transform: translateY(-5px);
+    }
+    .action-buttons-result {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin: 40px 0;
+      flex-wrap: wrap;
+    }
+    .btn-result {
+      padding: 15px 30px;
+      border: none;
+      border-radius: 25px;
+      font-size: 1.1em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+      min-width: 200px;
+    }
+    .btn-primary-result {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      color: white;
+    }
+    .btn-secondary-result {
+      background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+      color: white;
+    }
+    .btn-result:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+    .game-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin: 30px 0;
+    }
+    .stat-card {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 15px;
+      text-align: center;
+      backdrop-filter: blur(5px);
+    }
+    .stat-number {
+      font-size: 2em;
+      font-weight: bold;
+      color: #FFD700;
+    }
+    .rank-medal {
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+
+  .gameresult-container
+    .gameresult-header
+      h1.gameresult-title 🎉 GAME COMPLETED! 🎉
+      .session-info-result
+        p
+          strong Session ID: 
+          span#session-id-result #{sessionId}
+        p
+          strong Total Players: 
+          span#total-players #{players ? players.length : 0}
+        p
+          strong Game Duration: 
+          span#game-duration Loading...
+
+    //- Winner Announcement
+    if players && players.length > 0
+      - var winner = players.sort((a, b) => (b.current_score || 0) - (a.current_score || 0))[0]
+      .winner-announcement
+        h2 👑 CHAMPION 👑
+        .winner-info
+          h3= winner.user_name
+          p
+            strong Final Score: #{winner.current_score || 0} points
+        p.winner-message Congratulations on your victory!
+
+    //- Final Leaderboard
+    .final-leaderboard
+      h2 🏆 FINAL LEADERBOARD 🏆
+      
+      //- Top 3 Podium
+      if players && players.length > 0
+        - var sortedPlayers = players.sort((a, b) => (b.current_score || 0) - (a.current_score || 0))
+        - var topThree = sortedPlayers.slice(0, 3)
+        
+        .podium-display
+          each player, index in topThree
+            if index === 0
+              .podium-place.podium-first
+                .rank-medal 🥇
+                h3= player.user_name
+                p= (player.current_score || 0) + ' points'
+                p 1st Place
+            else if index === 1
+              .podium-place.podium-second
+                .rank-medal 🥈
+                h3= player.user_name
+                p= (player.current_score || 0) + ' points'
+                p 2nd Place
+            else if index === 2
+              .podium-place.podium-third
+                .rank-medal 🥉
+                h3= player.user_name
+                p= (player.current_score || 0) + ' points'
+                p 3rd Place
+
+      //- Complete Rankings
+      .players-grid
+        each player, index in players.sort((a, b) => (b.current_score || 0) - (a.current_score || 0))
+          .player-card
+            .player-rank
+              if index === 0
+                span.rank-medal 🥇
+              else if index === 1
+                span.rank-medal 🥈
+              else if index === 2
+                span.rank-medal 🥉
+              else
+                span.rank-medal #{index + 1}
+            h4= player.user_name
+            p
+              strong Score: #{player.current_score || 0} points
+            p
+              strong Status: 
+              span(class=player.game_started === 2 ? 'status-finished' : 'status-incomplete')
+                | #{player.game_started === 2 ? '✅ Completed' : '⚠️ Incomplete'}
+
+    //- Game Statistics
+    .game-stats
+      .stat-card
+        .stat-number #{players ? players.length : 0}
+        p Total Players
+      .stat-card
+        .stat-number #{players ? players.filter(p => p.game_started === 2).length : 0}
+        p Completed Game
+      if players && players.length > 0
+        - var avgScore = Math.round(players.reduce((sum, p) => sum + (p.current_score || 0), 0) / players.length)
+        .stat-card
+          .stat-number #{avgScore}
+          p Average Score
+        - var highestScore = Math.max(...players.map(p => p.current_score || 0))
+        .stat-card
+          .stat-number #{highestScore}
+          p Highest Score
+
+    //- Action Buttons
+    .action-buttons-result
+      a.btn-result.btn-primary-result(href="/leaderboard") 🏆 View Global Leaderboard
+      a.btn-result.btn-secondary-result(href="/mainpage") 🏠 Return to Main Menu
+      a.btn-result.btn-secondary-result(href=`/waitingroomP?session_id=${sessionId}`) 🔄 New Game (Same Session)
+
+  script.
+    // Game result page initialization
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('🎯 Game Result page loaded');
+      
+      // Calculate and display game duration (mock data for now)
+      const gameDurationElement = document.getElementById('game-duration');
+      if (gameDurationElement) {
+        // This would be calculated from actual game start/end times
+        gameDurationElement.textContent = 'Completed';
+      }
+      
+      // Add celebration animations
+      setTimeout(() => {
+        const title = document.querySelector('.gameresult-title');
+        if (title) {
+          title.style.animation = 'glow 2s ease-in-out infinite alternate';
+        }
+      }, 500);
+      
+      // Auto-refresh every 30 seconds to check for any updates
+      setInterval(() => {
+        console.log('🔄 Refreshing game results...');
+        window.location.reload();
+      }, 30000);
+    });

@@ -1,0 +1,61 @@
+.container {
+    text-align: center;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.header h1 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.content {
+    padding: 20px;
+}
+
+.waiting-participants {
+    margin-top: 20px;
+}
+
+.waiting-participants ul {
+    list-style: none;
+    padding: 0;
+}
+
+.waiting-participants li {
+    display: inline-block;
+    margin: 10px;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.start-game-container {
+    margin-top: 20px;
+}
+
+.start-game-btn {
+    padding: 10px 20px;
+    background-color: green;
+    color: white;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.start-game-btn:hover {
+    background-color: darkgreen;
+}
+
+.footer {
+    margin-top: 40px;
+}
+
+.footer a {
+    text-decoration: none;
+    color: blue;
+    font-size: 1.2rem;
+}

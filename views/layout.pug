@@ -1,0 +1,11 @@
+//- layout.pug
+
+doctype html
+html
+  head
+    title #{title}
+    link(rel="stylesheet", href="/css/home.css")
+    script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js")  // Google CDN
+  body
+    .container
+      block content  // This block will contain the content for the current page

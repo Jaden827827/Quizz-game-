@@ -1,0 +1,491 @@
+doctype html
+html
+  head
+    title #{title}
+    link(rel="stylesheet", href="/css/waitingroomP.css")
+    script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js")
+    //- BGM Control Styles for waitingroomP
+    style.
+      .bgm-controls {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+        font-family: Arial, sans-serif;
+        min-width: 200px;
+      }
+      .bgm-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        width: 100%;
+        transition: all 0.3s ease;
+      }
+      .bgm-btn:hover {
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        transform: translateY(-1px);
+      }
+      .volume-control {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
+      }
+      .volume-slider {
+        flex: 1;
+        height: 6px;
+        border-radius: 3px;
+        background: #333;
+        outline: none;
+        cursor: pointer;
+      }
+      .volume-slider::-webkit-slider-thumb {
+        appearance: none;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #667eea;
+        cursor: pointer;
+      }
+      .volume-slider::-moz-range-thumb {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #667eea;
+        cursor: pointer;
+        border: none;
+      }
+      .volume-label {
+        font-size: 12px;
+        color: #ccc;
+      }
+      #volume-percent {
+        font-size: 12px;
+        color: white;
+        min-width: 35px;
+      }
+      .auto-click-trigger {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 1px;
+        height: 1px;
+        opacity: 0;
+        pointer-events: auto;
+        z-index: 1;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+      }
+  body
+    .container
+      .header
+        h1 Waiting Room
+        p.welcome-message Welcome #{user_name}, you are waiting for the session creator to start the game.
+
+      .main-content
+        .session-info
+          p.session-label Session ID: 
+          span#sessionId.session-id #{session_id}
+          button#copy-session-btn.copy-btn(onclick="copySessionId()") Copy
+
+        .participants-section
+          h3 Players in Session:
+          .players-container
+            ul#playersList.players-list
+              each player in players
+                li.player-item= player.user_name
+
+        .status-section
+          if isSessionCreator
+            .start-game-container
+              button#start-game-btn.start-btn(onclick="startGame()") Start Game
+              p.host-message You are the host. Click to start when ready!
+          else
+            .waiting-container
+              .loading-spinner
+              p.waiting-message Waiting for the host to start the game...
+          
+          // Game started section (hidden by default)
+          .game-started-section#game-started-section(style="display: none;")
+            .game-active-message
+              h3 🎮 Game is Now Active!
+              p The game has started. Track live scores and progress.
+            button#score-tracking-btn.score-tracking-btn(onclick="goToScoreTracking()") 
+              span 📊 View Live Scores
+              small Track player progress in real-time
+
+      .footer
+        .footer-buttons
+          button.btn.back-btn(onclick="leaveSession()") Leave session 
+          
+
+    //- Hidden clickable element for autoplay trigger
+    button.auto-click-trigger#auto-click-trigger
+
+    //- Music Controls UI (Hidden)
+    .bgm-controls(style="display: none;")
+      button#toggle-bgm-btn.bgm-btn ▶️ Play
+      .volume-control
+        span.volume-label 🔊
+        input#volume-slider.volume-slider(type="range" min="0" max="100" value="50")
+        span#volume-percent 50%
+
+    script(src="/socket.io/socket.io.js")
+    script(src="/js/waitingroomP.js")
+    script.
+      // Socket.IO connection for real-time updates
+      const socket = io.connect();
+      const sessionId = "#{session_id}";
+      
+      // Join the session
+      socket.emit('joinSession', sessionId);
+
+      // Listen for game start
+      socket.on('gameStarted', (data) => {
+          if (data.sessionId === sessionId) {
+              showGameStartedSection();
+          }
+      });
+
+      // Listen for player updates
+      socket.on('updatePlayers', (players) => {
+          updatePlayersList(players);
+      });
+
+      // Check game status periodically
+      let gameStatusInterval = setInterval(() => {
+          checkGameStatus();
+      }, 3000);
+
+      // Check immediately when page loads
+      document.addEventListener('DOMContentLoaded', () => {
+          checkGameStatus();
+      });
+
+      // Function to check if game has started
+      function checkGameStatus() {
+          fetch(`/check-game-status?session_id=${sessionId}`)
+              .then(response => response.json())
+              .then(data => {
+                  if (data.game_started) {
+                      showGameStartedSection();
+                      clearInterval(gameStatusInterval);
+                  }
+              })
+              .catch(error => {
+                  console.error('Error checking game status:', error);
+              });
+      }
+
+      // Show game started section
+      function showGameStartedSection() {
+          const gameStartedSection = document.getElementById('game-started-section');
+          const statusSection = document.querySelector('.status-section');
+          
+          if (gameStartedSection && statusSection) {
+              // Hide waiting/start game sections
+              const startContainer = document.querySelector('.start-game-container');
+              const waitingContainer = document.querySelector('.waiting-container');
+              
+              if (startContainer) startContainer.style.display = 'none';
+              if (waitingContainer) waitingContainer.style.display = 'none';
+              
+              // Show game started section with animation
+              gameStartedSection.style.display = 'block';
+              gameStartedSection.classList.add('fade-in');
+              
+              // Play notification sound
+              playNotificationSound();
+          }
+      }
+
+      // Go to score tracking page
+      function goToScoreTracking() {
+          window.location.href = `/scoretrackingP?session_id=${sessionId}`;
+      }
+
+      // Play notification sound
+      function playNotificationSound() {
+          try {
+              const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+              const oscillator = audioContext.createOscillator();
+              const gainNode = audioContext.createGain();
+              
+              oscillator.connect(gainNode);
+              gainNode.connect(audioContext.destination);
+              
+              oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
+              oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 0.15);
+              
+              gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+              gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+              
+              oscillator.start(audioContext.currentTime);
+              oscillator.stop(audioContext.currentTime + 0.3);
+          } catch (error) {
+              // Ignore audio errors
+          }
+      }
+
+      // Copy session ID function
+      function copySessionId() {
+          const sessionIdText = document.getElementById('sessionId').textContent;
+          navigator.clipboard.writeText(sessionIdText).then(() => {
+              const copyBtn = document.getElementById('copy-session-btn');
+              const originalText = copyBtn.textContent;
+              copyBtn.textContent = 'Copied!';
+              copyBtn.classList.add('copied');
+              
+              setTimeout(() => {
+                  copyBtn.textContent = originalText;
+                  copyBtn.classList.remove('copied');
+              }, 2000);
+          }).catch(err => {
+              console.error('Failed to copy: ', err);
+          });
+      }
+
+      // Start game function
+      function startGame() {
+          const startBtn = document.getElementById('start-game-btn');
+          startBtn.textContent = 'Starting...';
+          startBtn.disabled = true;
+          
+          // Emit start game event
+          socket.emit('startGame', sessionId);
+          
+          // Redirect to game page
+          setTimeout(() => {
+              window.location.href = `/game?session_id=${sessionId}`;
+          }, 1000);
+      }
+
+      // Update players list
+      function updatePlayersList(players) {
+          const playersList = document.getElementById('playersList');
+          playersList.innerHTML = '';
+          
+          players.forEach(player => {
+              const li = document.createElement('li');
+              li.className = 'player-item';
+              li.textContent = player.user_name;
+              playersList.appendChild(li);
+          });
+      }
+
+      // Leave session function
+      function leaveSession() {
+          if (confirm('Are you sure you want to leave this session?')) {
+              const leaveBtn = document.querySelector('.back-btn');
+              const originalText = leaveBtn.textContent;
+              leaveBtn.textContent = 'Leaving...';
+              leaveBtn.disabled = true;
+              
+              // Make POST request to leave session
+              fetch('/waitingroomP/leave-session', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                      session_id: sessionId
+                  })
+              })
+              .then(response => response.json())
+              .then(data => {
+                  if (data.success) {
+                      console.log('Successfully left session:', data.message);
+                      // Redirect to homeP page
+                      window.location.href = '/homeP';
+                  } else {
+                      console.error('Error leaving session:', data.error);
+                      alert('Error leaving session: ' + data.error);
+                      leaveBtn.textContent = originalText;
+                      leaveBtn.disabled = false;
+                  }
+              })
+              .catch(error => {
+                  console.error('Network error leaving session:', error);
+                  alert('Network error. Please try again.');
+                  leaveBtn.textContent = originalText;
+                  leaveBtn.disabled = false;
+              });
+          }
+      }
+
+    script.
+      // Waiting Room BGM System with music3.mp3
+      window.waitingRoomMusicSystem = window.waitingRoomMusicSystem || {
+          audio: null,
+          isPlaying: false,
+          currentVolume: 0.5,
+          initialized: false
+      };
+
+      document.addEventListener('DOMContentLoaded', function() {
+          const wrms = window.waitingRoomMusicSystem;
+          
+          // Initialize waiting room audio if not exists
+          if (!wrms.initialized) {
+              wrms.audio = new Audio('/music/music3.mp3');
+              wrms.audio.loop = true;
+              wrms.audio.volume = wrms.currentVolume;
+              
+              // Load saved volume setting
+              const savedVolume = localStorage.getItem('waitingroom-bgm-volume');
+              if (savedVolume) {
+                  wrms.currentVolume = parseFloat(savedVolume);
+                  wrms.audio.volume = wrms.currentVolume;
+              }
+              
+              // Audio event listeners
+              wrms.audio.addEventListener('play', function() {
+                  wrms.isPlaying = true;
+                  updateToggleButton();
+              });
+              
+              wrms.audio.addEventListener('pause', function() {
+                  wrms.isPlaying = false;
+                  updateToggleButton();
+              });
+              
+              wrms.initialized = true;
+          }
+          
+          // Page-specific UI controls
+          const toggleButton = document.getElementById('toggle-bgm-btn');
+          const volumeSlider = document.getElementById('volume-slider');
+          const volumePercent = document.getElementById('volume-percent');
+          const autoClickTrigger = document.getElementById('auto-click-trigger');
+          
+          // Update UI if controls exist
+          if (toggleButton) {
+              updateToggleButton();
+              toggleButton.addEventListener('click', toggleBGM);
+          }
+          
+          if (volumeSlider && volumePercent) {
+              volumeSlider.value = Math.round(wrms.currentVolume * 100);
+              volumePercent.textContent = Math.round(wrms.currentVolume * 100) + '%';
+              
+              volumeSlider.addEventListener('input', function() {
+                  const volume = this.value / 100;
+                  wrms.currentVolume = volume;
+                  wrms.audio.volume = volume;
+                  volumePercent.textContent = this.value + '%';
+                  localStorage.setItem('waitingroom-bgm-volume', volume);
+              });
+          }
+          
+          // Automatic music start with click simulation
+          function autoStartMusic() {
+              if (!wrms.isPlaying) {
+                  // Try to play immediately
+                  wrms.audio.play().then(() => {
+                      console.log('🎵 Waiting room music3.mp3 started automatically');
+                  }).catch(() => {
+                      // If autoplay is blocked, simulate a click
+                      setTimeout(() => {
+                          simulateClick();
+                      }, 100);
+                  });
+              }
+          }
+          
+          // Simulate click to bypass autoplay restrictions
+          function simulateClick() {
+              if (autoClickTrigger) {
+                  console.log('🎵 Attempting auto-click to start music...');
+                  
+                  // Add click listener to auto trigger
+                  const clickHandler = function() {
+                      wrms.audio.play().then(() => {
+                          console.log('🎵 Music3.mp3 started via auto-click');
+                      }).catch(console.log);
+                      
+                      // Remove listener after use
+                      autoClickTrigger.removeEventListener('click', clickHandler);
+                  };
+                  
+                  autoClickTrigger.addEventListener('click', clickHandler);
+                  
+                  // Simulate the click automatically
+                  setTimeout(() => {
+                      autoClickTrigger.click();
+                  }, 50);
+              }
+          }
+          
+          // Try multiple methods to start music
+          function attemptAutoPlay() {
+              // Method 1: Direct play
+              autoStartMusic();
+              
+              // Method 2: Delayed attempt
+              setTimeout(() => {
+                  if (!wrms.isPlaying) {
+                      autoStartMusic();
+                  }
+              }, 500);
+              
+              // Method 3: Auto-click after page interaction
+              setTimeout(() => {
+                  if (!wrms.isPlaying) {
+                      console.log('🎵 Triggering auto-click for music...');
+                      simulateClick();
+                  }
+              }, 1000);
+              
+              // Method 4: User interaction detection
+              const userInteractionEvents = ['click', 'mousedown', 'keydown', 'touchstart'];
+              const startOnInteraction = function() {
+                  if (!wrms.isPlaying) {
+                      wrms.audio.play().catch(console.log);
+                  }
+                  // Remove listeners after first interaction
+                  userInteractionEvents.forEach(event => {
+                      document.removeEventListener(event, startOnInteraction);
+                  });
+              };
+              
+              userInteractionEvents.forEach(event => {
+                  document.addEventListener(event, startOnInteraction, { once: true });
+              });
+          }
+          
+          function toggleBGM() {
+              if (wrms.isPlaying) {
+                  wrms.audio.pause();
+              } else {
+                  wrms.audio.play().catch(console.log);
+              }
+          }
+          
+          function updateToggleButton() {
+              if (toggleButton) {
+                  toggleButton.textContent = wrms.isPlaying ? '⏸️ Pause' : '▶️ Play';
+              }
+          }
+          
+          // Start the auto-play attempts
+          attemptAutoPlay();
+          
+          // Also try when the page becomes visible (if user switched tabs)
+          document.addEventListener('visibilitychange', function() {
+              if (!document.hidden && !wrms.isPlaying) {
+                  setTimeout(() => autoStartMusic(), 200);
+              }
+          });
+      });

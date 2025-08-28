@@ -1,0 +1,18 @@
+.btn {
+  display: block;
+  padding: 12px 0;
+  font-size: 1.1rem;
+  border-radius: 5px;
+  text-decoration: none;
+  color: #fff;
+  margin-bottom: 12px;
+  text-align: center;
+  transition: background 0.2s;
+  font-weight: bold;
+}
+
+.btn-primary { background: #007bff; }
+.btn-secondary { background: #6c757d; }
+.btn-danger { background: #dc3545; }
+
+.btn:hover { filter: brightness(1.15); }

@@ -1,0 +1,716 @@
+doctype html
+html
+  head
+    title Leaderboard
+    style.
+      body {
+        font-family: 'Arial', sans-serif;
+        background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+        background-size: 400% 400%;
+        animation: gradient 15s ease infinite;
+        margin: 0;
+        padding: 20px;
+        min-height: 100vh;
+        color: #333;
+        overflow-x: hidden;
+      }
+
+      @keyframes gradient {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      .particles {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: -1;
+      }
+
+      .particle {
+        position: absolute;
+        background-color: rgba(255, 255, 255, 0.15);
+        border-radius: 50%;
+        animation: float 25s infinite;
+      }
+
+      @keyframes float {
+        0% {
+          transform: translateY(100vh) rotate(0deg);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(-10vh) rotate(720deg);
+          opacity: 0;
+        }
+      }
+      
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        background: rgba(255,255,255,0.95);
+        border-radius: 15px;
+        padding: 40px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        text-align: center;
+        animation: breathing-glow 4s ease-in-out infinite alternate;
+      }
+
+      .leaderboard-info h2 {
+        animation: text-focus-in 1s cubic-bezier(0.550, 0.085, 0.680, 0.530) both;
+      }
+
+      .player-item:hover {
+        transform: scale(1.05);
+        background: #e9ecef;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      }
+
+      .player-name {
+        font-weight: bold;
+        color: #333;
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+      }
+
+      .player-name::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        display: block;
+        margin-top: 2px;
+        right: 0;
+        background: #667eea;
+        transition: width .3s ease;
+        -webkit-transition: width .3s ease;
+      }
+
+      .player-name:hover::after {
+        width: 100%;
+        left: 0;
+        background-color: #764ba2;
+      }
+      
+      .header {
+        margin-bottom: 30px;
+      }
+      
+      .header h1 {
+        color: #2c3e50;
+        font-size: 36px;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+      }
+      
+      .leaderboard-info {
+        background: linear-gradient(135deg, #ffd700 0%, #ffed4a 100%);
+        color: #333;
+        padding: 30px;
+        border-radius: 12px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+      }
+      
+      .sessions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+
+      /* BGM Controls for Leaderboard */
+      .bgm-controls-leaderboard {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+        font-family: Arial, sans-serif;
+        min-width: 200px;
+      }
+      .bgm-btn-leaderboard {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        width: 100%;
+        transition: all 0.3s ease;
+      }
+      .bgm-btn-leaderboard:hover {
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        transform: translateY(-1px);
+      }
+      .volume-control-leaderboard {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
+      }
+      .volume-slider-leaderboard {
+        flex: 1;
+        height: 6px;
+        border-radius: 3px;
+        background: #333;
+        outline: none;
+        cursor: pointer;
+      }
+      .volume-slider-leaderboard::-webkit-slider-thumb {
+        appearance: none;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #667eea;
+        cursor: pointer;
+      }
+      .volume-slider-leaderboard::-moz-range-thumb {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #667eea;
+        cursor: pointer;
+        border: none;
+      }
+      .volume-label-leaderboard {
+        font-size: 12px;
+        color: #ccc;
+      }
+      #volume-percent-leaderboard {
+        font-size: 12px;
+        color: white;
+        min-width: 35px;
+      }
+      .auto-click-trigger-leaderboard {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 1px;
+        height: 1px;
+        opacity: 0;
+        pointer-events: auto;
+        z-index: 1;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+      }
+
+      @keyframes breathing-glow {
+        from {
+          box-shadow: 0 8px 32px rgba(0,0,0,0.3), 0 0 10px rgba(118, 75, 162, 0.3);
+        }
+        to {
+          box-shadow: 0 8px 40px rgba(0,0,0,0.4), 0 0 20px rgba(118, 75, 162, 0.5);
+        }
+      }
+
+      @keyframes text-focus-in {
+        0% {
+          -webkit-filter: blur(12px);
+                  filter: blur(12px);
+          opacity: 0;
+        }
+        100% {
+          -webkit-filter: blur(0px);
+                  filter: blur(0px);
+          opacity: 1;
+        }
+      }
+      }
+      
+      .session-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        border-left: 5px solid #667eea;
+        text-align: left;
+      }
+      
+      .session-header {
+        background: linear-gradient(135deg, #c8460aff 0%, #082a99ff 100%);
+        color: white;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        text-align: center;
+      }
+      
+      .session-id {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+      
+      .session-stats {
+        font-size: 14px;
+      }
+      
+      .players-list {
+        margin-top: 10px;
+      }
+      
+      .player-item {
+        background: #f8f9fa;
+        padding: 10px;
+        margin: 5px 0;
+        border-radius: 6px;
+        border-left: 3px solid #28a745;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      
+      .player-name {
+        font-weight: bold;
+        color: #333;
+      }
+      
+      .player-score {
+        font-size: 12px;
+        color: #666;
+        text-align: right;
+      }
+      
+      .score-percentage {
+        font-weight: bold;
+        color: #007bff;
+      }
+      
+      .no-sessions {
+        text-align: center;
+        color: #666;
+        font-style: italic;
+        padding: 40px;
+        background: #f8f9fa;
+        border-radius: 12px;
+        margin-bottom: 30px;
+      }
+      
+      .error-message {
+        background: #f8d7da;
+        color: #721c24;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        border: 1px solid #f5c6cb;
+      }
+      
+      .action-buttons {
+        margin-top: 30px;
+      }
+      
+      .btn {
+        display: inline-block;
+        padding: 12px 30px;
+        margin: 0 10px;
+        border: none;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+      
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+      
+      .btn-secondary {
+        background: #6c757d;
+        color: white;
+      }
+      
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      }
+      
+      /* Question Details Button */
+      .view-questions-btn {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: bold;
+        margin-top: 10px;
+        transition: all 0.3s ease;
+        width: 100%;
+      }
+      
+      .view-questions-btn:hover {
+        background: linear-gradient(135deg, #20c997 0%, #28a745 100%);
+        transform: translateY(-1px);
+      }
+      
+      /* Modal Styles */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        backdrop-filter: blur(5px);
+      }
+      
+      .modal-content {
+        background-color: #fefefe;
+        margin: 2% auto;
+        padding: 20px;
+        border-radius: 15px;
+        width: 90%;
+        max-width: 800px;
+        max-height: 85vh;
+        overflow-y: auto;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        position: relative;
+      }
+      
+      .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        position: absolute;
+        top: 15px;
+        right: 25px;
+      }
+      
+      .close:hover,
+      .close:focus {
+        color: #000;
+        text-decoration: none;
+      }
+      
+      .modal-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+      
+      .question-item {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-left: 4px solid #007bff;
+      }
+      
+      .question-item.correct {
+        border-left-color: #28a745;
+        background: #f8fff9;
+      }
+      
+      .question-item.incorrect {
+        border-left-color: #dc3545;
+        background: #fff8f8;
+      }
+      
+      .question-text {
+        font-weight: bold;
+        color: #2c3e50;
+        margin-bottom: 10px;
+        font-size: 16px;
+      }
+      
+      .question-choices {
+        margin: 10px 0;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+      
+      .choice {
+        padding: 8px 12px;
+        border-radius: 5px;
+        font-size: 14px;
+        background: #e9ecef;
+        border: 1px solid #ced4da;
+      }
+      
+      .choice.correct-answer {
+        background: #d4edda;
+        border-color: #c3e6cb;
+        color: #155724;
+        font-weight: bold;
+      }
+      
+      .choice.user-answer {
+        background: #f8d7da;
+        border-color: #f5c6cb;
+        color: #721c24;
+      }
+      
+      .choice.user-answer.correct-user {
+        background: #d1ecf1;
+        border-color: #bee5eb;
+        color: #0c5460;
+      }
+      
+      .question-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 10px;
+        font-size: 12px;
+        color: #6c757d;
+      }
+      
+      .result-badge {
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: bold;
+        text-transform: uppercase;
+      }
+      
+      .result-badge.correct {
+        background: #d4edda;
+        color: #155724;
+      }
+      
+      .result-badge.incorrect {
+        background: #f8d7da;
+        color: #721c24;
+      }
+      
+      .loading {
+        text-align: center;
+        padding: 40px;
+        color: #666;
+      }
+
+  body
+    .particles
+    //- Auto-click trigger for music autoplay bypass
+    button#auto-click-trigger-leaderboard.auto-click-trigger-leaderboard
+
+    .container
+      .header
+        h1 🏆 Leaderboard
+        
+      if error
+        .error-message
+          strong Error: #{error}
+      else
+        .leaderboard-info
+          h2 Completed Game Sessions
+          p View all finished game sessions and player performances
+        
+        if sessions && sessions.length > 0
+          .sessions-grid
+            each session in sessions
+              .session-card
+                .session-header
+                  .session-id Session ID: #{session.session_id}
+                  .session-stats
+                    | Total Questions Answered: #{session.total_questions_answered}
+                    br
+                    if session.end_time
+                      | Ended: #{new Date(session.end_time).toLocaleString()}
+                
+                if session.players && session.players.length > 0
+                  .players-list
+                    h4 Players in this session:
+                    each player in session.players
+                      .player-item
+                        .player-name= player.user_name
+                        .player-score
+                          .score-percentage #{player.session_percentage}% of Session
+                          div #{player.correct_answers} correct answers
+                    button.view-questions-btn(onclick=`viewSessionQuestions('${session.session_id}')`) 📋 View All Questions
+                else
+                  .players-list
+                    p.no-players No players found in this session
+                    button.view-questions-btn(onclick=`viewSessionQuestions('${session.session_id}')`) 📋 View All Questions
+        else
+          .no-sessions
+            h3 No Completed Sessions
+            p No game sessions have been completed yet. Play some games to see results here!
+        
+      .action-buttons
+        if !current_user
+          a.btn.btn-primary(href="/mainpage") Return to Main Page
+          a.btn.btn-secondary(href="/session") Start New Game
+        if current_user
+          a.btn.btn-secondary(href="javascript:history.back()") Back to End Session
+
+    //- Music Controls UI for Leaderboard (Hidden)
+    .bgm-controls-leaderboard(style="display: none;")
+      button#toggle-bgm-btn-leaderboard.bgm-btn-leaderboard ▶️ Play Music
+      .volume-control-leaderboard
+        span.volume-label-leaderboard 🔊
+        input#volume-slider-leaderboard.volume-slider-leaderboard(type="range" min="0" max="100" value="50")
+        span#volume-percent-leaderboard 50%
+
+    //- Questions Modal
+    #questionsModal.modal
+      .modal-content
+        span.close &times;
+        .modal-header
+          h2#modalTitle Questions for Session
+        #modalContent.loading Loading questions...
+
+    script(src="/js/scoretrackingBGM.js")
+    script.
+      document.addEventListener('DOMContentLoaded', function() {
+        const particlesContainer = document.querySelector('.particles');
+        for (let i = 0; i < 30; i++) {
+          const particle = document.createElement('div');
+          particle.classList.add('particle');
+          const size = Math.random() * 7 + 3;
+          particle.style.width = `${size}px`;
+          particle.style.height = `${size}px`;
+          particle.style.left = `${Math.random() * 100}%`;
+          particle.style.animationDelay = `${Math.random() * 25}s`;
+          particlesContainer.appendChild(particle);
+        }
+      });
+
+      // Modal functionality
+      const modal = document.getElementById('questionsModal');
+      const span = document.getElementsByClassName('close')[0];
+      
+      // Close modal when clicking X
+      span.onclick = function() {
+        modal.style.display = 'none';
+      }
+      
+      // Close modal when clicking outside
+      window.onclick = function(event) {
+        if (event.target == modal) {
+          modal.style.display = 'none';
+        }
+      }
+      
+      // Function to view session questions
+      function viewSessionQuestions(sessionId) {
+        console.log('Viewing questions for session:', sessionId);
+        
+        // Show modal
+        modal.style.display = 'block';
+        document.getElementById('modalTitle').textContent = `Questions for Session ${sessionId}`;
+        document.getElementById('modalContent').innerHTML = '<div class="loading">Loading questions...</div>';
+        
+        // Fetch questions via AJAX
+        fetch(`/leaderboard/session/${sessionId}/questions`)
+          .then(response => response.json())
+          .then(data => {
+            console.log('Received data:', data);
+            
+            if (data.error) {
+              document.getElementById('modalContent').innerHTML = `<div class="error-message">${data.error}</div>`;
+              return;
+            }
+            
+            if (data.questions.length === 0) {
+              document.getElementById('modalContent').innerHTML = '<div class="no-sessions">No questions found for this session.</div>';
+              return;
+            }
+            
+            console.log(`Processing ${data.questions.length} question attempts`);
+            
+            // Display questions
+            let questionsHtml = '';
+            const groupedQuestions = {};
+            
+            // Group questions by question_id (since multiple users may answer same question)
+            data.questions.forEach(q => {
+              if (!groupedQuestions[q.question_id]) {
+                groupedQuestions[q.question_id] = {
+                  question_id: q.question_id,
+                  question_text: q.question_text,
+                  correct_option: q.correct_option,
+                  option_a: q.option_a,
+                  option_b: q.option_b,
+                  option_c: q.option_c,
+                  option_d: q.option_d,
+                  explanation: q.explanation,
+                  attempts: []
+                };
+              }
+              groupedQuestions[q.question_id].attempts.push({
+                user_name: q.user_name,
+                user_answer: q.user_answer,
+                is_correct: q.is_correct,
+                response_time: q.response_time_second,
+                attempt_id: q.attempt_id
+              });
+            });
+            
+            // Generate HTML for each question
+            let questionIndex = 1;
+            Object.values(groupedQuestions).forEach((question) => {
+              questionsHtml += `
+                <div class="question-item">
+                  <div class="question-text">Question ${questionIndex} (ID: ${question.question_id}): ${question.question_text}</div>
+                  <div class="question-choices">
+                    <div class="choice ${question.correct_option === 'A' ? 'correct-answer' : ''}">A: ${question.option_a || 'N/A'}</div>
+                    <div class="choice ${question.correct_option === 'B' ? 'correct-answer' : ''}">B: ${question.option_b || 'N/A'}</div>
+                    <div class="choice ${question.correct_option === 'C' ? 'correct-answer' : ''}">C: ${question.option_c || 'N/A'}</div>
+                    <div class="choice ${question.correct_option === 'D' ? 'correct-answer' : ''}">D: ${question.option_d || 'N/A'}</div>
+                  </div>
+                  <div class="question-meta">
+                    <span><strong>Correct Answer:</strong> ${question.correct_option}</span>
+                    <span><strong>Total Attempts:</strong> ${question.attempts.length}</span>
+                  </div>
+                  ${question.explanation ? `
+                    <div style="margin: 10px 0; padding: 10px; background: #e7f3ff; border-radius: 5px; border-left: 3px solid #007bff;">
+                      <strong>Explanation:</strong> ${question.explanation}
+                    </div>
+                  ` : ''}
+                  <div style="margin-top: 10px;">
+                    <strong>Player Attempts:</strong>
+                    ${question.attempts.map((attempt, index) => `
+                      <div style="margin: 5px 0; padding: 8px; background: ${attempt.is_correct ? '#f8fff9' : '#fff8f8'}; border-radius: 5px; border-left: 3px solid ${attempt.is_correct ? '#28a745' : '#dc3545'};">
+                        <span style="font-weight: bold;">${attempt.user_name}</span> answered: 
+                        <span style="font-weight: bold; color: ${attempt.is_correct ? '#28a745' : '#dc3545'};">${attempt.user_answer}</span>
+                        <span class="result-badge ${attempt.is_correct ? 'correct' : 'incorrect'}">${attempt.is_correct ? 'Correct' : 'Incorrect'}</span>
+                        <span style="float: right; font-size: 11px; color: #666;">Response time: ${attempt.response_time || 'N/A'}s</span>
+                      </div>
+                    `).join('')}
+                  </div>
+                </div>
+              `;
+              questionIndex++;
+            });
+            
+            document.getElementById('modalContent').innerHTML = questionsHtml;
+          })
+          .catch(error => {
+            console.error('Error fetching questions:', error);
+            document.getElementById('modalContent').innerHTML = '<div class="error-message">Failed to load questions. Please try again.</div>';
+          });
+      }

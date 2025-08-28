@@ -1,0 +1,263 @@
+doctype html
+html
+  head
+    title Game Session
+    link(rel="stylesheet", href="/css/session.css")
+    script(src="https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js" onload="console.log('QRCode loaded from unpkg')" onerror="console.log('unpkg failed')")
+    script(src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js" onload="console.log('QRCode loaded from jsdelivr')" onerror="console.log('jsdelivr failed')")
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js" onload="console.log('QRCode loaded from cdnjs')" onerror="console.log('cdnjs failed')")
+  body
+    // Auto-click trigger for BGM
+    button#auto-click-trigger(style="display: none;")
+    
+    .container
+      .header
+        h1 Game Session
+        p Welcome #{user_name}, you have successfully joined the session!
+
+      .content
+        .session-info
+          p
+            | Your session ID: 
+            span#sessionId #{session_id}
+          .copy-btn-container
+            button#copySessionIdBtn(type="button") Copy Session ID
+        
+        .qr-section
+          h3 Share with QR Code
+          .qr-container
+            canvas#qrcode
+          p.qr-instructions Scan this QR code to join the session quickly!
+
+      .players-list
+        h2 Participants:
+        ul#playersList
+          each player in players
+            li= player.user_name
+
+      .start-game-container#startGameContainer
+        // Only show the "Start Game" button if the session has enough players (e.g., at least 2 players)
+        if players.length > 1
+          a.btn#start-game-btn(href=`/gameee?session_id=${session_id}`) Start Game
+        else
+          p Please wait for more players to join before starting the game.
+
+      .footer
+        a(href="/mainpage") Return to Main Page
+
+    script(src="/js/session.js")
+    script(src="/js/bgm.js")
+    script.
+      console.log('🚀 Session page script loading...');
+      
+      // Wait for everything to load, then generate QR
+      window.addEventListener('load', function() {
+          console.log('📄 Window fully loaded, waiting a moment...');
+          setTimeout(initializeQRCode, 1000); // Wait 1 second for everything to be ready
+      });
+      
+      function initializeQRCode() {
+          console.log('🎯 Initializing QR Code generation...');
+          
+          // Check if QRCode library is available
+          console.log('QRCode library type:', typeof QRCode);
+          
+          if (typeof QRCode === 'undefined') {
+              console.log('❌ QRCode library not found! Using fallback method...');
+              generateFallbackQR();
+              return;
+          }
+          
+          console.log('✅ QRCode library loaded successfully!');
+          console.log('Available QRCode methods:', Object.getOwnPropertyNames(QRCode));
+          
+          // Get DOM elements
+          const sessionIdElement = document.getElementById('sessionId');
+          const qrCanvas = document.getElementById('qrcode');
+          const qrContainer = document.querySelector('.qr-container');
+          
+          console.log('Session ID element:', sessionIdElement);
+          console.log('QR Canvas element:', qrCanvas);
+          console.log('QR Container element:', qrContainer);
+          
+          if (!sessionIdElement) {
+              console.log('❌ Session ID element (#sessionId) not found!');
+              showQRError('Session ID element not found');
+              return;
+          }
+          
+          if (!qrCanvas) {
+              console.log('❌ QR Canvas element (#qrcode) not found!');
+              generateFallbackQR();
+              return;
+          }
+          
+          // Get session ID
+          const sessionId = sessionIdElement.textContent.trim();
+          console.log('📱 Session ID found:', sessionId);
+          
+          if (!sessionId) {
+              console.log('❌ Session ID is empty!');
+              showQRError('Session ID is empty');
+              return;
+          }
+          
+          // Generate join URL
+          const baseUrl = window.location.origin;
+          const joinUrl = baseUrl + '/joingame?session_id=' + sessionId;
+          console.log('🔗 Generated join URL:', joinUrl);
+          
+          // Generate QR Code
+          console.log('🎨 Starting QR code generation...');
+          try {
+              QRCode.toCanvas(qrCanvas, joinUrl, {
+                  width: 250,
+                  height: 250,
+                  margin: 3,
+                  color: {
+                      dark: '#000000',
+                      light: '#FFFFFF'
+                  }
+              }, function(error) {
+                  if (error) {
+                      console.error('❌ QR Code generation failed:', error);
+                      console.log('Falling back to image-based QR...');
+                      generateFallbackQR();
+                  } else {
+                      console.log('🎉 QR Code generated successfully!');
+                      console.log('Canvas dimensions:', qrCanvas.width + 'x' + qrCanvas.height);
+                      
+                      // Add success styling
+                      if (qrContainer) {
+                          qrContainer.style.border = '2px solid #4CAF50';
+                          qrContainer.style.borderRadius = '8px';
+                          qrContainer.style.padding = '10px';
+                          qrContainer.style.backgroundColor = '#f8fff8';
+                      }
+                  }
+              });
+          } catch (err) {
+              console.error('❌ Exception during QR generation:', err);
+              console.log('Falling back to image-based QR...');
+              generateFallbackQR();
+          }
+      }
+      
+      function generateFallbackQR() {
+          console.log('📸 Generating fallback QR code using online service...');
+          
+          const sessionIdElement = document.getElementById('sessionId');
+          const qrContainer = document.querySelector('.qr-container');
+          
+          if (!sessionIdElement || !qrContainer) {
+              showQRError('Cannot generate fallback QR - elements not found');
+              return;
+          }
+          
+          const sessionId = sessionIdElement.textContent.trim();
+          const baseUrl = window.location.origin;
+          const joinUrl = baseUrl + '/joingame?session_id=' + sessionId;
+          
+          // Use QR Server API for fallback
+          const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(joinUrl)}`;
+          
+          console.log('🔗 Fallback QR URL:', qrImageUrl);
+          
+          qrContainer.innerHTML = `
+              <img src="${qrImageUrl}" 
+                   alt="QR Code for session ${sessionId}" 
+                   style="width: 250px; height: 250px; border: 2px solid #4CAF50; border-radius: 8px; background: white;"
+                   onload="console.log('✅ Fallback QR image loaded successfully!')"
+                   onerror="console.log('❌ Fallback QR image failed to load'); showQRError('All QR generation methods failed');">
+          `;
+          
+          // Add success styling to container
+          qrContainer.style.border = '2px solid #4CAF50';
+          qrContainer.style.borderRadius = '8px';
+          qrContainer.style.padding = '10px';
+          qrContainer.style.backgroundColor = '#f8fff8';
+      }
+      
+      function showQRError(message) {
+          console.log('🚨 Showing QR error:', message);
+          const qrContainer = document.querySelector('.qr-container');
+          if (qrContainer) {
+              qrContainer.innerHTML = `
+                  <div style="padding: 30px; text-align: center; border: 2px dashed #ff6b6b; background-color: #fff5f5; border-radius: 8px;">
+                      <p style="color: #e74c3c; margin: 0 0 10px 0; font-size: 18px;">⚠️ QR Code Not Available</p>
+                      <p style="color: #2c3e50; margin: 0 0 15px 0; font-weight: bold;">Please use the "Copy Session ID" button above to share</p>
+                      <p style="color: #7f8c8d; font-size: 12px; margin: 0;">${message}</p>
+                  </div>
+              `;
+          }
+      }
+      
+      // Set up copy button functionality
+      document.addEventListener('DOMContentLoaded', function() {
+          console.log('� Setting up copy button...');
+          const copyBtn = document.getElementById('copySessionIdBtn');
+          if (copyBtn) {
+              copyBtn.addEventListener('click', function() {
+                  const sessionId = document.getElementById('sessionId').textContent.trim();
+                  console.log('📋 Copying session ID:', sessionId);
+                  
+                  if (navigator.clipboard && navigator.clipboard.writeText) {
+                      navigator.clipboard.writeText(sessionId).then(function() {
+                          alert('✅ Session ID copied to clipboard!');
+                      }).catch(function(err) {
+                          console.log('Clipboard failed, using prompt:', err);
+                          prompt('Copy this session ID:', sessionId);
+                      });
+                  } else {
+                      prompt('Copy this session ID:', sessionId);
+                  }
+              });
+              console.log('✅ Copy button set up successfully');
+          } else {
+              console.log('❌ Copy button not found');
+          }
+      });
+
+    // Auto-refresh participants list every 5 seconds
+    script.
+      setInterval(function() {
+        updateParticipantsList();
+      }, 5000);
+      
+      function updateParticipantsList() {
+        const sessionId = document.getElementById('sessionId').textContent.trim();
+        
+        // Fetch updated participants list
+        fetch(`/session-participants?session_id=${sessionId}`)
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              // Update participants list
+              const playersList = document.getElementById('playersList');
+              playersList.innerHTML = '';
+              
+              data.players.forEach(player => {
+                const li = document.createElement('li');
+                li.textContent = player.user_name;
+                playersList.appendChild(li);
+              });
+              
+              // Update start game button container
+              const startGameContainer = document.getElementById('startGameContainer');
+              if (data.players.length > 1) {
+                startGameContainer.innerHTML = `<a class="btn" id="start-game-btn" href="/gameee?session_id=${sessionId}">Start Game</a>`;
+              } else {
+                startGameContainer.innerHTML = '<p>Please wait for more players to join before starting the game.</p>';
+              }
+              
+              console.log('✅ Participants list updated successfully');
+            } else {
+              console.log('❌ Failed to update participants list:', data.message);
+            }
+          })
+          .catch(error => {
+            console.error('❌ Error updating participants list:', error);
+          });
+      }
+
+

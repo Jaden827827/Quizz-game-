@@ -1,0 +1,176 @@
+
+
+block content
+  //- Star, Planet, and Shooting Star Background
+  .stars
+    - for(var i=0;i<60;i++)
+      .star(style=`top:${Math.random()*100}vh;left:${Math.random()*100}vw;`)
+  .shooting-star
+  .shooting-star.shooting-star2
+  .shooting-star.shooting-star3
+  .planet
+
+  .admin-container(style='display: flex; justify-content: center; align-items: center; min-height: 80vh;')
+    .admin-content(style='text-align: center;')
+      h1 Admin Dashboard
+      .admin-buttons(style='display: flex; flex-direction: column; gap: 1rem; align-items: center; margin-top: 2rem;')
+        a.btn.btn-primary(href='/user-management' style='width: 220px;') User Management
+        a.btn.btn-secondary(href='/question-management' style='width: 220px;') Question Management
+        a.btn.btn-danger(href='/home' style='width: 220px;') Log Out
+
+  style.
+    body {
+      min-height: 100vh;
+      background: linear-gradient(120deg, #0a1431 0%, #101935 70%, #151e3e 100%);
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* --- 星星点缀 --- */
+    .stars {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .star {
+      position: absolute;
+      width: 2px; height: 2px;
+      background: white;
+      border-radius: 50%;
+      opacity: 0.7;
+      animation: twinkle 2s infinite alternate;
+    }
+    .star:nth-child(2n) { animation-duration: 3.2s; }
+    .star:nth-child(3n) { animation-duration: 4.4s; }
+    .star:nth-child(4n) { animation-duration: 2.6s; }
+
+    @keyframes twinkle {
+      0% { opacity: 0.4; }
+      100% { opacity: 0.9; }
+    }
+
+    /* --- Star --- */
+    .shooting-star {
+      position: absolute;
+      top: 20vh; left: 10vw;
+      width: 80px; height: 2px;
+      background: linear-gradient(90deg, #fff 60%, rgba(255,255,255,0));
+      border-radius: 50%;
+      opacity: 0.7;
+      transform: rotate(-20deg);
+      animation: shooting 2.2s linear infinite;
+    }
+    .shooting-star2 {
+      top: 65vh; left: 30vw; width: 100px;
+      animation-delay: 1.3s;
+    }
+    .shooting-star3 {
+      top: 40vh; left: 70vw; width: 60px;
+      animation-delay: 2s;
+    }
+    @keyframes shooting {
+      0% { opacity: 0; transform: translateX(0) rotate(-20deg); }
+      10% { opacity: 0.85; }
+      100% { opacity: 0; transform: translateX(350px) rotate(-20deg);}
+    }
+
+    /* --- Planet --- */
+    .planet {
+      position: absolute;
+      bottom: 6vh;
+      right: 10vw;
+      width: 64px; height: 64px;
+      background: radial-gradient(circle at 30% 30%, #ffe291 40%, #ec994b 90%);
+      border-radius: 50%;
+      box-shadow: 0 0 32px 4px #ffe29155;
+      z-index: 1;
+      border: 3px solid #ffd88466;
+    }
+    .planet::after {
+      content: '';
+      position: absolute;
+      left: 16px; top: 16px;
+      width: 20px; height: 8px;
+      background: #fff7c280;
+      border-radius: 30px 20px 30px 20px/16px 8px 8px 8px;
+    }
+
+
+    .btn {
+      width: 220px;
+      padding: 13px 0;
+      font-size: 1.05rem;
+      font-weight: 600;
+      border-radius: 14px;
+      border: none;
+      outline: none;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.17s cubic-bezier(.4,0,.2,1);
+      box-shadow: 0 2px 10px rgba(30, 41, 59, 0.06);
+      letter-spacing: 0.03em;
+      margin-bottom: 2px;
+    }
+
+    /* Blue button */
+    .btn-primary {
+      background: linear-gradient(90deg, #2563eb 0%, #1e40af 100%);
+      color: #fff;
+      border: 1.5px solid #1e40af;
+    }
+    .btn-primary:hover {
+      background: linear-gradient(90deg, #1e40af 0%, #2563eb 100%);
+      transform: scale(1.04) translateY(-2px);
+      box-shadow: 0 4px 18px rgba(37, 99, 235, 0.13);
+    }
+
+    /* Cyan button */
+    .btn-secondary {
+      background: linear-gradient(90deg, #22d3ee 0%, #06b6d4 100%);
+      color: #fff;
+      border: 1.5px solid #06b6d4;
+    }
+    .btn-secondary:hover {
+      background: linear-gradient(90deg, #06b6d4 0%, #22d3ee 100%);
+      transform: scale(1.04) translateY(-2px);
+      box-shadow: 0 4px 18px rgba(6, 182, 212, 0.13);
+    }
+
+    /* Red button */
+    .btn-danger {
+      background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
+      color: #fff;
+      border: 1.5px solid #dc2626;
+    }
+    .btn-danger:hover {
+      background: linear-gradient(90deg, #dc2626 0%, #ef4444 100%);
+      transform: scale(1.04) translateY(-2px);
+      box-shadow: 0 4px 18px rgba(239, 68, 68, 0.13);
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: #ffffffff;  /* Deep blue-gray for professional look */
+      letter-spacing: 0.01em;
+      margin-bottom: 1.5rem;
+      margin-top: 0;
+      text-shadow: 0 2px 12px rgba(30, 41, 59, 0.08);
+      line-height: 1.15;
+      transition: color 0.2s;
+      /* Optional: subtle underline bar effect */
+      position: relative;
+    }
+
+    h1::after {
+      content: '';
+      display: block;
+      width: 60px;
+      height: 4px;
+      background: linear-gradient(90deg, #2563eb 0%, #22d3ee 100%);
+      border-radius: 3px;
+      margin: 18px auto 0 auto;
+    }

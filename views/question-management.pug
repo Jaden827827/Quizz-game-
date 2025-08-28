@@ -1,0 +1,114 @@
+extends layout
+
+block content
+  //- Directly include your CSS for this page only:
+  link(rel='stylesheet', href='/css/question-management.css')
+
+  .stars
+    - for(var i=0;i<60;i++)
+      .star(style=`top:${Math.random()*100}vh;left:${Math.random()*100}vw;`)
+  .shooting-star
+  .shooting-star.shooting-star2
+  .shooting-star.shooting-star3
+  .planet
+
+  .bg-overlay
+    .container.mt-5
+      h1.text-white Question Management
+      a.btn.btn-secondary(href='/admin' style='width: 220px;') Back
+      if error
+        .alert.alert-danger= error
+
+      //- Dropdown to select question
+      .form-group
+        label.text-white(for='questionSelect') Select Question by ID:
+        select.form-control#questionSelect(onchange='showSelectedQuestion()')
+          option(value='') -- Select a question --
+          each question in questions
+            option(value=question.question_id)= `ID ${question.question_id}`
+
+      //- Text area to show selected question details
+      .form-group
+        label.text-white(for='questionDetails') Selected Question Details:
+        textarea.form-control#questionDetails(rows='8', readonly)
+
+      //- Question Table
+      h3.mt-4.mb-3.text-white Question List
+      .table-responsive
+        table.table.table-striped.table-dark
+          thead
+            tr
+              th ID
+              th Question Text
+              th Option A
+              th Option B
+              th Option C
+              th Option D
+              th Correct Option
+              th Explanation
+              th Actions
+          tbody
+            if questions && questions.length
+              each question in questions
+                tr
+                  td= question.question_id
+                  td= question.question_text
+                  td= question.option_a
+                  td= question.option_b
+                  td= question.option_c
+                  td= question.option_d
+                  td= question.correct_option
+                  td= question.explanation
+                  td
+                    button.btn.btn-danger.btn-sm(onclick=`openDeleteModal(${question.question_id})`) Delete
+            else
+              tr
+                td(colspan='9', class='text-center text-white') No questions found.
+
+    //- Delete Confirmation Modal
+    #deleteModal.modal(tabindex='-1', role='dialog')
+      .modal-dialog(role='document')
+        .modal-content
+          .modal-header.bg-danger.text-white
+            h5.modal-title Confirm Deletion
+            button.close(type='button', data-dismiss='modal', aria-label='Close', onclick='closeDeleteModal()')
+              span(aria-hidden='true') &times;
+          .modal-body
+            p Are you sure you want to delete this question?
+          .modal-footer
+            button.btn.btn-secondary(type='button', data-dismiss='modal', onclick='closeDeleteModal()') Cancel
+            form(id='deleteQuestionForm', method='POST', action='')
+              button.btn.btn-danger(type='submit') Delete
+
+    //- Script for modal and showing question
+    script.
+      const questionsData = !{JSON.stringify(questions)};
+
+      function openDeleteModal(questionId) {
+        const form = document.getElementById('deleteQuestionForm');
+        form.action = `/question-management/delete/${questionId}`;
+        document.getElementById('deleteModal').style.display = 'block';
+      }
+
+      function closeDeleteModal() {
+        document.getElementById('deleteModal').style.display = 'none';
+      }
+
+      function showSelectedQuestion() {
+        const select = document.getElementById('questionSelect');
+        const selectedId = parseInt(select.value);
+        const question = questionsData.find(q => q.question_id === selectedId);
+        const detailsBox = document.getElementById('questionDetails');
+        
+        if (question) {
+          detailsBox.value = `Question: ${question.question_text}
+          Option A: ${question.option_a}
+          Option B: ${question.option_b}
+          Option C: ${question.option_c}
+          Option D: ${question.option_d}
+          Correct Answer: ${question.correct_option}
+          Explanation: ${question.explanation}`;
+        } else {
+          detailsBox.value = '';
+        }
+      }

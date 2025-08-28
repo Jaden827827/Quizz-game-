@@ -1,0 +1,26 @@
+doctype html
+html
+  head
+    title Game
+    link(rel="stylesheet", href="/css/game.css")
+  body
+    .container
+      .header
+        h1 Game Starting
+        p Welcome to the game! The following players are in this session:
+
+      .content
+        ul
+          each player in players
+            li= player.user_name  // List all players in this session
+
+      .footer
+        a(href="/mainpage") Return to Main Page
+
+    script(src="/js/game.js")
+
+    script.
+      // If needed, add any JavaScript logic related to the game here
+      console.log('Game is starting with session ID: #{session_id}'); // To check that session_id is available in the page
+
+      // Optionally, add any game starting or other interactive features.
